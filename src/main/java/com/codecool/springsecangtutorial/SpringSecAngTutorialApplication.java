@@ -10,5 +10,4 @@ public class SpringSecAngTutorialApplication {
         SpringApplication.run(SpringSecAngTutorialApplication.class, args);
         System.out.println("START");
     }
-
 }

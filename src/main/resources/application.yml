@@ -1,0 +1,8 @@
+spring:
+  security:
+    user:
+      name: ala
+      password: kot
+logging:
+  level:
+    org.springframework.security: DEBUG

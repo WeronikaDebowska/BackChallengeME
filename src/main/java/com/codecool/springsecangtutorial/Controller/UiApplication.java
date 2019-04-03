@@ -1,60 +1,37 @@
 package com.codecool.springsecangtutorial.Controller;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @SpringBootApplication
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+//@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping
 public class UiApplication {
 
-    @RequestMapping("/resource")
-    public Map<String,Object> home() {
-        System.out.println("/resource");
-        Map<String,Object> model = new HashMap<>();
-        model.put("id", UUID.randomUUID().toString());
-        model.put("content", "Hello World");
-        return model;
-    }
+    private static final Map<String, String> users = new HashMap<>();
 
+    @RequestMapping("/login")
+    public Boolean login(@RequestBody User user) {
+        return
+                user.getUserName().equals("ala") && user.getPassword().equals("kot");
+    }
 
     @RequestMapping("/user")
-    public Principal user(Principal user) {
-        System.out.println("DUPA");
-        System.out.println( user.toString());
-        return user;
+    public Principal user(HttpServletRequest request) {
+        String authToken = request.getHeader("Authorization")
+                .substring("Basic ".length()).trim();
+        return () -> new String(Base64.getDecoder()
+                .decode(authToken)).split(":")[0];
+
     }
-
-
-    @Configuration
-//    @Order(SecurityProperties.BASIC_AUTH_ORDER)
-    protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.cors()
-                    .and()
-                    .httpBasic()
-                    .and()
-                    .authorizeRequests()
-                    .antMatchers("/index.html", "/", "/home", "/login", "/user").permitAll()
-                    .anyRequest().authenticated();
-        }
-    }
-
-
-
 }
