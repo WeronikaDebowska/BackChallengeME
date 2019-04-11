@@ -1,6 +1,6 @@
-package com.codecool.springsecangtutorial.DAO;
+package com.codecool.backChallengeMe.DAO;
 
-import com.codecool.springsecangtutorial.Model.User;
+import com.codecool.backChallengeMe.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByUserName(String name);
+    User findByUsername(String name);
 }

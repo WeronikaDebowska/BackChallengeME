@@ -1,4 +1,4 @@
-package com.codecool.springsecangtutorial;
+package com.codecool.backChallengeMe;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

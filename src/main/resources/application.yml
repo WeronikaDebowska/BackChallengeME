@@ -5,9 +5,9 @@
 ##      exclude:
 ##      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 #    spring.datasource.driverClassName: org.postgresql.Driver
-#    url: jdbc:postgresql://ec2-107-20-177-161.compute-1.amazonaws.com:5432/daaoh13o9op66j?sslmode=require&user=iwnwvdnwwygsba&password=41cf65d700a225624add425426ff2ee9fb9588d96ba0fde1a58ebf1e0d1b068c
-#    username: iwnwvdnwwygsba
-#    password: 41cf65d700a225624add425426ff2ee9fb9588d96ba0fde1a58ebf1e0d1b068c
+#    url: ${PSQL_URL}
+#    username: ${PSQL_USER_NAME}
+#    password: ${PSQL_PASSWORD}
 logging:
   level:
     org.springframework.security: DEBUG

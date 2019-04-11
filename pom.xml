@@ -84,21 +84,13 @@
             <version>5.2.17.Final</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.6</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-
-    <!--<beans>-->
-    <!--<bean class="java.net.URI" id="dbUrl">-->
-    <!--<constructor-arg value="#{systemEnvironment['DATABASE_URL']}"/>-->
-    <!--</bean>-->
-
-    <!--<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">-->
-    <!--&lt;!&ndash;dbc:postgresql://iwnwvdnwwygsba:41cf65d700a225624add425426ff2ee9fb9588d96ba0fde1a58ebf1e0d1b068c@ec2-107-20-177-161.compute-1.amazonaws.com:5432/daaoh13o9op66j&ndash;&gt;-->
-    <!--<property name="url" value="#{ 'jdbc:postgresql://ec2-107-20-177-161.compute-1.amazonaws.com:5432/daaoh13o9op66j?sslmode=require&user=iwnwvdnwwygsba&password=41cf65d700a225624add425426ff2ee9fb9588d96ba0fde1a58ebf1e0d1b068c'}"/>-->
-    <!--<property name="username" value="#{ 'iwnwvdnwwygsba' }"/>-->
-    <!--<property name="password" value="#{ '41cf65d700a225624add425426ff2ee9fb9588d96ba0fde1a58ebf1e0d1b068c' }"/>-->
-    <!--</bean>-->
-    <!--</beans>-->
-
 
     <build>
         <plugins>

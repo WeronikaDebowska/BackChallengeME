@@ -1,8 +1,8 @@
-package com.codecool.springsecangtutorial.Services;
+package com.codecool.backChallengeMe.services;
 
-import com.codecool.springsecangtutorial.DAO.UserRepository;
-import com.codecool.springsecangtutorial.Model.MyUserPrincipal;
-import com.codecool.springsecangtutorial.Model.User;
+import com.codecool.backChallengeMe.DAO.UserRepository;
+import com.codecool.backChallengeMe.model.MyUserPrincipal;
+import com.codecool.backChallengeMe.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,7 +23,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByUserName(username);
+        User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
