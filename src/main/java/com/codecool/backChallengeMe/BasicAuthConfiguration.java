@@ -24,8 +24,7 @@ public class BasicAuthConfiguration
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        return bCryptPasswordEncoder;
+        return new BCryptPasswordEncoder();
     }
 
     @Autowired
@@ -52,7 +51,8 @@ public class BasicAuthConfiguration
                 .and()
                 .formLogin()
                 .loginProcessingUrl("/authorization")
-                .loginPage("/loginpage")
+                .failureUrl("/loginpage")
+
                 .defaultSuccessUrl("/user")
                 .usernameParameter("username")
                 .passwordParameter("password")

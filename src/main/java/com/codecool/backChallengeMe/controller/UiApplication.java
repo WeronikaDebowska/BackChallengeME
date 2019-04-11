@@ -8,15 +8,14 @@ import com.codecool.backChallengeMe.model.MyUserPrincipal;
 import com.codecool.backChallengeMe.services.MyUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-//@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+//@CrossOrigin(origins = "*")
 @RestController
 @Slf4j
 public class UiApplication {
@@ -39,8 +38,20 @@ public class UiApplication {
     @GetMapping("/login")
     public ResponseEntity login() {
         return ResponseEntity.status(HttpStatus.OK).build();
-
     }
+
+    @RequestMapping("/authorization")
+    public ResponseEntity authorize() {
+//        ResponseEntity response = ResponseEntity.status(HttpStatus.OK).build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Access-Control-Allow-Origin", "*");
+        headers.add("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token");
+
+        return new ResponseEntity<>(headers, HttpStatus.OK);
+    }
+
+
+
 
     @GetMapping(value = "/logoutSuccessful")
     public String logoutSuccessfulPage() {
@@ -51,8 +62,8 @@ public class UiApplication {
     @GetMapping("/user")
     public String user(Principal principal) {
         log.info("/user");
-        String username = ((MyUserPrincipal) ((Authentication) principal).getPrincipal()).getUsername();
-        return username;
-
+        return ((MyUserPrincipal) ((Authentication) principal).getPrincipal()).getUsername();
     }
 }
+
+
