@@ -15,7 +15,5 @@ public class SpringSecAngTutorialApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringSecAngTutorialApplication.class, args);
         log.info("start");
-
-
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+//@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 //@CrossOrigin(origins = "*")
 @RestController
 @Slf4j
@@ -40,14 +40,18 @@ public class UiApplication {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600,
+            allowedHeaders={"x-auth-token", "x-requested-with", "x-xsrf-token"}, allowCredentials = "true")
     @RequestMapping("/authorization")
     public ResponseEntity authorize() {
 //        ResponseEntity response = ResponseEntity.status(HttpStatus.OK).build();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Origin", "*");
-        headers.add("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token");
-
-        return new ResponseEntity<>(headers, HttpStatus.OK);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Access-Control-Allow-Origin", "*");
+//        headers.add("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token, X-Requested-With");
+//        headers.add("Access-Control-Allow-Credentials", "true");
+//
+//        return new ResponseEntity<>(headers, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
@@ -59,6 +63,8 @@ public class UiApplication {
     }
 
 
+    @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600,
+            allowedHeaders={"x-auth-token", "x-requested-with", "x-xsrf-token"}, allowCredentials = "true")
     @GetMapping("/user")
     public String user(Principal principal) {
         log.info("/user");

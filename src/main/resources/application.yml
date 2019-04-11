@@ -1,13 +1,13 @@
-#spring:
-#  datasource:
-#    platform: postgres
-##    autoconfigure:
-##      exclude:
-##      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-#    spring.datasource.driverClassName: org.postgresql.Driver
-#    url: ${PSQL_URL}
-#    username: ${PSQL_USER_NAME}
-#    password: ${PSQL_PASSWORD}
+spring:
+  datasource:
+    platform: postgres
+#    autoconfigure:
+#      exclude:
+#      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    spring.datasource.driverClassName: org.postgresql.Driver
+    url: ${PSQL_URL}
+    username: ${PSQL_USER_NAME}
+    password: ${PSQL_PASSWORD}
 logging:
   level:
     org.springframework.security: DEBUG
