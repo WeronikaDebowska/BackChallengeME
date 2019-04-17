@@ -10,7 +10,7 @@ import java.sql.Date;
 @Entity(name = "Executoions")
 @Component
 @Getter
-public class Executions {
+public class Execution {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
