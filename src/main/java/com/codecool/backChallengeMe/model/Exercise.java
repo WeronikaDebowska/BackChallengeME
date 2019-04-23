@@ -2,15 +2,12 @@ package com.codecool.backChallengeMe.model;
 
 
 import lombok.Getter;
-import org.springframework.stereotype.Component;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity(name = "Exercises")
-@Component
 @Getter
 public class Exercise {
 
@@ -19,4 +16,29 @@ public class Exercise {
     private Long id;
     private String name;
     private String description;
+
+
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
+    private Set<ChallengeExercise> challengesExercisesSet;
+
+    public Exercise() {
+    }
+
+    public Exercise(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Exercise ex = (Exercise) o;
+        return Objects.equals(name, ex.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
 }
