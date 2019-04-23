@@ -73,20 +73,25 @@ public class UiApplication {
     @GetMapping("/user/{id}/challenges")
     public ResponseEntity<List<ChallengeDetails>> getUserChallenges(@PathVariable("id") Long id) {
 
-        User user = userRepository.findUserById(id);
-
-        System.out.println(user.getUsername());
-        System.out.println(user.getId());
-
-        Set<ChallengeUser> challengeUserSet = challengeUserRepository.findAllByUser(user);
         List<ChallengeDetails> allChallengesDetails = new LinkedList<>();
-        for (ChallengeUser challengeUser : challengeUserSet) {
-            ChallengeDetails challengeDetails = new ChallengeDetails().setDetails(challengeUser);
-            allChallengesDetails.add(challengeDetails);
-            System.out.println(challengeUser.getChall().getName());
 
+        try {
+            User user = userRepository.findUserById(id);
+            System.out.println(user.getUsername());
+            System.out.println(user.getId());
+
+            Set<ChallengeUser> challengeUserSet = challengeUserRepository.findAllByUser(user);
+
+            for (ChallengeUser challengeUser : challengeUserSet) {
+                ChallengeDetails challengeDetails = new ChallengeDetails().setDetails(challengeUser);
+                allChallengesDetails.add(challengeDetails);
+                System.out.println(challengeUser.getChall().getName());
+
+            }
+            return new ResponseEntity<>(allChallengesDetails, HttpStatus.OK);
+        } catch (NullPointerException e) {
+            return new ResponseEntity<>(allChallengesDetails, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(allChallengesDetails, HttpStatus.OK);
 
     }
 }
