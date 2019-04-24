@@ -1,5 +1,6 @@
-package com.codecool.backChallengeMe.model;
+package com.codecool.backChallengeMe.model.responses;
 
+import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import lombok.*;
 
 import org.springframework.context.annotation.Scope;
@@ -12,7 +13,7 @@ import java.util.Date;
 @Scope(value = "prototype")
 @Getter
 @Setter
-public class ChallengeDetails implements Serializable {
+public class ChallengeUserDetails implements Serializable {
 
     private String challengeName;
     private Long challengeId;
@@ -22,10 +23,10 @@ public class ChallengeDetails implements Serializable {
     private Date finish;
 //    private List<User> participants;  //TODO add an list with other users of the challenge
 
-    public ChallengeDetails() {
+    public ChallengeUserDetails() {
     }
 
-    public ChallengeDetails setDetails(ChallengeUser challengeUser) {
+    public ChallengeUserDetails setDetails(ChallengeUser challengeUser) {
         this.challengeName = challengeUser.getChall().getName();
         this.challengeId = challengeUser.getChall().getId();
         this.userRole = challengeUser.getUserRole();

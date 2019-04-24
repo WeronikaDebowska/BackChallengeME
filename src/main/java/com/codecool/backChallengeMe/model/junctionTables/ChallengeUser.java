@@ -1,5 +1,7 @@
-package com.codecool.backChallengeMe.model;
+package com.codecool.backChallengeMe.model.junctionTables;
 
+import com.codecool.backChallengeMe.model.Challenge;
+import com.codecool.backChallengeMe.model.User;
 import lombok.*;
 
 //import lombok.Getter;

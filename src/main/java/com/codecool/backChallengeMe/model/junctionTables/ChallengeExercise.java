@@ -1,12 +1,14 @@
-package com.codecool.backChallengeMe.model;
+package com.codecool.backChallengeMe.model.junctionTables;
 
+import com.codecool.backChallengeMe.model.Challenge;
+import com.codecool.backChallengeMe.model.Exercise;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity(name = "Challengers_exercises")
+@Entity(name = "Challenges_exercises")
 @Getter
 @Setter
 public class ChallengeExercise implements Serializable {
@@ -20,7 +22,7 @@ public class ChallengeExercise implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("exerId")
-    private Exercise exercise;
+    private Exercise exer;
 
     private int goal;
 
@@ -29,7 +31,7 @@ public class ChallengeExercise implements Serializable {
 
     public ChallengeExercise(Challenge challenge, Exercise exercise) {
         this.chall = challenge;
-        this.exercise = exercise;
+        this.exer = exercise;
         this.id = new ChallengesExercisesId(challenge.getId(), exercise.getId());
     }
 
@@ -42,11 +44,11 @@ public class ChallengeExercise implements Serializable {
 
         ChallengeExercise that = (ChallengeExercise) o;
         return Objects.equals(chall, that.chall) &&
-                Objects.equals(exercise, that.exercise);
+                Objects.equals(exer, that.exer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(chall, exercise);
+        return Objects.hash(chall, exer);
     }
 }

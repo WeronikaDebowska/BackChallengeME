@@ -1,9 +1,13 @@
 package com.codecool.backChallengeMe.controller;
 
+import com.codecool.backChallengeMe.DAO.ChallengeExerciseRepository;
 import com.codecool.backChallengeMe.DAO.ChallengeRepository;
 import com.codecool.backChallengeMe.DAO.ChallengeUserRepository;
 import com.codecool.backChallengeMe.DAO.UserRepository;
 import com.codecool.backChallengeMe.model.*;
+import com.codecool.backChallengeMe.model.responses.ChallengeDetails;
+import com.codecool.backChallengeMe.model.responses.ChallengeUserDetails;
+import com.codecool.backChallengeMe.services.ChallengeUserService;
 import com.codecool.backChallengeMe.services.MyUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600,
         allowedHeaders = {"*"},
@@ -34,7 +37,13 @@ public class UiApplication {
     private ChallengeUserRepository challengeUserRepository;
 
     @Autowired
+    private ChallengeExerciseRepository challengeExerciseRepository;
+
+    @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ChallengeUserService challengeUserService;
 
     @Autowired
     public UiApplication(MyUserDetailsService myUserDetailsService) {
@@ -71,27 +80,30 @@ public class UiApplication {
     }
 
     @GetMapping("/user/{id}/challenges")
-    public ResponseEntity<List<ChallengeDetails>> getUserChallenges(@PathVariable("id") Long id) {
+    public ResponseEntity<List<ChallengeUserDetails>> getUserChallenges(@PathVariable("id") Long id) {
 
-        List<ChallengeDetails> allChallengesDetails = new LinkedList<>();
-
+        List<ChallengeUserDetails> allChallengesDetails = new LinkedList<>();
         try {
-            User user = userRepository.findUserById(id);
-            System.out.println(user.getUsername());
-            System.out.println(user.getId());
-
-            Set<ChallengeUser> challengeUserSet = challengeUserRepository.findAllByUser(user);
-
-            for (ChallengeUser challengeUser : challengeUserSet) {
-                ChallengeDetails challengeDetails = new ChallengeDetails().setDetails(challengeUser);
-                allChallengesDetails.add(challengeDetails);
-                System.out.println(challengeUser.getChall().getName());
-
-            }
+            challengeUserService.createChallengeUserDetailsResponse(id, allChallengesDetails);
             return new ResponseEntity<>(allChallengesDetails, HttpStatus.OK);
         } catch (NullPointerException e) {
             return new ResponseEntity<>(allChallengesDetails, HttpStatus.NOT_FOUND);
         }
 
     }
+
+    @GetMapping("/challenges/{chall_id}")
+    public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long chall_id) {
+        ChallengeDetails challengeDetails = new ChallengeDetails();
+        Optional<Challenge> challenge = challengeRepository.findById(chall_id);
+        if (challenge.isPresent()) {
+            challengeDetails = challengeUserService.createChallengeDetailsResponse(challenge.get());
+            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(challengeDetails, HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
 }

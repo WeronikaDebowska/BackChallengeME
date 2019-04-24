@@ -1,4 +1,4 @@
-package com.codecool.backChallengeMe.model;
+package com.codecool.backChallengeMe.model.junctionTables;
 
 import javax.persistence.Column;
 import java.io.Serializable;

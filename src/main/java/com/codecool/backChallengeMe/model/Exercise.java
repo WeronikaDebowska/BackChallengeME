@@ -1,15 +1,17 @@
 package com.codecool.backChallengeMe.model;
 
 
+import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "Exercises")
 @Getter
-public class Exercise {
+public class Exercise implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,7 +20,7 @@ public class Exercise {
     private String description;
 
 
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "exer", cascade = CascadeType.ALL)
     private Set<ChallengeExercise> challengesExercisesSet;
 
     public Exercise() {

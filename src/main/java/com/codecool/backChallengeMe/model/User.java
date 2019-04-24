@@ -1,5 +1,6 @@
 package com.codecool.backChallengeMe.model;
 
+import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import lombok.*;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,8 @@
 package com.codecool.backChallengeMe.model;
 
 
+import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
+import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import lombok.*;
 
 import javax.persistence.*;
