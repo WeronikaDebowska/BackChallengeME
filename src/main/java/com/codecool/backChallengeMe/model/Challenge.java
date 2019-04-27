@@ -8,7 +8,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -24,8 +26,12 @@ public class Challenge implements Serializable {
     private Long id;
 
     private String name;
-    private Date start;
-    private Date finish;
+    private Timestamp start;
+    private Timestamp finish;
+
+    @ManyToMany(mappedBy = "taggedChallengesList")
+    private List<Tag> challengeTagList;
+
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)
     private Set<ChallengeUser> challengesUsersSet = new HashSet<>();
@@ -36,7 +42,7 @@ public class Challenge implements Serializable {
     public Challenge() {
     }
 
-    public Challenge(String name, Date start, Date finish, Set<ChallengeUser> challengesUsersSet, Set<ChallengeExercise> challengesExercisesSet) {
+    public Challenge(String name, Timestamp start, Timestamp finish, Set<ChallengeUser> challengesUsersSet, Set<ChallengeExercise> challengesExercisesSet) {
         this.name = name;
         this.start = start;
         this.finish = finish;

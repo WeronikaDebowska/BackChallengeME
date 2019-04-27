@@ -79,7 +79,7 @@ public class UiApplication {
         return "{\"id\": \"" + id + "\"}";
     }
 
-    @GetMapping("/user/{id}/challenges")
+    @GetMapping("/users/{id}/challenges")
     public ResponseEntity<List<ChallengeUserDetails>> getUserChallenges(@PathVariable("id") Long id) {
 
         List<ChallengeUserDetails> allChallengesDetails = new LinkedList<>();
@@ -94,7 +94,7 @@ public class UiApplication {
 
     @GetMapping("/challenges/{chall_id}")
     public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long chall_id) {
-        ChallengeDetails challengeDetails = new ChallengeDetails();
+        ChallengeDetails challengeDetails = new ChallengeDetails();     //TODO do the searchinfg in service, not here
         Optional<Challenge> challenge = challengeRepository.findById(chall_id);
         if (challenge.isPresent()) {
             challengeDetails = challengeUserService.createChallengeDetailsResponse(challenge.get());
@@ -104,6 +104,16 @@ public class UiApplication {
         }
     }
 
+
+    @PostMapping("/challenges")
+    public ResponseEntity addChallenge(@RequestBody String challengeName) {
+        //TODO add new challenge to DB
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+//    @PostMapping("/challenges/{chall_id}/exercises")
+//    public ResponseEntity addExercisesToChallenge(@PathVariable(value = "chall_id") Long chall_id, @RequestBody )
+//
 
 
 }

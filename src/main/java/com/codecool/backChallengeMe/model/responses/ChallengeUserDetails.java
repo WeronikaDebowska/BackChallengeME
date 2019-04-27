@@ -1,5 +1,6 @@
 package com.codecool.backChallengeMe.model.responses;
 
+import com.codecool.backChallengeMe.model.Tag;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import lombok.*;
 
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 @Component
 @Scope(value = "prototype")
@@ -21,7 +24,8 @@ public class ChallengeUserDetails implements Serializable {
     private String challengeStatus; //TODO change String into enum ChallengeStatus and map with DB
     private Date start;
     private Date finish;
-//    private List<User> participants;  //TODO add an list with other users of the challenge
+    private Integer accomplishmentPercentage;
+    private LinkedList<String> tagList = new LinkedList();
 
     public ChallengeUserDetails() {
     }
@@ -33,6 +37,11 @@ public class ChallengeUserDetails implements Serializable {
         this.challengeStatus = challengeUser.getChallenge_status();
         this.start = challengeUser.getChall().getStart();
         this.finish = challengeUser.getChall().getFinish();
+        this.accomplishmentPercentage = 50; //TODO count exact percentage from db
+        tagList.add("Buttocks");                    //TODO add tags of exercises included in challenge from db
+        tagList.add("Strength");
+
+
 
         return this;
     }
