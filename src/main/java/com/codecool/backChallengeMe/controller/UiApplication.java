@@ -6,8 +6,9 @@ import com.codecool.backChallengeMe.DAO.ChallengeUserRepository;
 import com.codecool.backChallengeMe.DAO.UserRepository;
 import com.codecool.backChallengeMe.model.*;
 import com.codecool.backChallengeMe.model.responses.ChallengeDetails;
+import com.codecool.backChallengeMe.model.responses.ChallengeParticipants;
 import com.codecool.backChallengeMe.model.responses.ChallengeUserDetails;
-import com.codecool.backChallengeMe.services.ChallengeUserService;
+import com.codecool.backChallengeMe.services.ResponseService;
 import com.codecool.backChallengeMe.services.MyUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class UiApplication {
     private UserRepository userRepository;
 
     @Autowired
-    private ChallengeUserService challengeUserService;
+    private ResponseService challengeUserService;
 
     @Autowired
     public UiApplication(MyUserDetailsService myUserDetailsService) {
@@ -100,9 +101,23 @@ public class UiApplication {
             challengeDetails = challengeUserService.createChallengeDetailsResponse(challenge.get());
             return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(challengeDetails, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("challenges/{chall_id}/participants")
+    public ResponseEntity<ChallengeParticipants> getChallengeParticipants(@PathVariable("chall_id") Long chall_id) {
+        Optional<Challenge> challenge = challengeRepository.findById(chall_id);
+        if (challenge.isPresent()) {
+            Challenge challengeToDisplay = challenge.get();
+            ChallengeParticipants challengeParticipants = challengeUserService.createChallengeParticipantsResponse(challengeToDisplay);
+
+            return new ResponseEntity(challengeParticipants, HttpStatus.OK);
+        }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
+
+
 
 
     @PostMapping("/challenges")

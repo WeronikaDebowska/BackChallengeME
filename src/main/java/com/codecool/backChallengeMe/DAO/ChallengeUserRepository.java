@@ -10,6 +10,7 @@ import java.util.List;
 public interface ChallengeUserRepository extends JpaRepository<ChallengeUser, Long> {
     List<ChallengeUser> findAllByUser(User user);
 
+    //    List<Challenge> findAllByUserAndOrderByChallenge_statusAsc(User user);
     List<ChallengeUser> findAllByChall(Challenge challenge);
 
 }
