@@ -1,4 +1,4 @@
-package com.codecool.backChallengeMe.model;
+package com.codecool.backChallengeMe.model.enums;
 
 public enum ChallengeStatus {
     PENDING,

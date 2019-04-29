@@ -1,10 +1,8 @@
 package com.codecool.backChallengeMe.controller;
 
-import com.codecool.backChallengeMe.DAO.ChallengeExerciseRepository;
-import com.codecool.backChallengeMe.DAO.ChallengeRepository;
-import com.codecool.backChallengeMe.DAO.ChallengeUserRepository;
-import com.codecool.backChallengeMe.DAO.UserRepository;
+import com.codecool.backChallengeMe.DAO.*;
 import com.codecool.backChallengeMe.model.*;
+import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import com.codecool.backChallengeMe.model.responses.ChallengeDetails;
 import com.codecool.backChallengeMe.model.responses.ChallengeParticipants;
 import com.codecool.backChallengeMe.model.responses.ChallengeUserDetails;
@@ -95,6 +93,7 @@ public class UiApplication {
 
     @GetMapping("/challenges/{chall_id}")
     public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long chall_id) {
+
         ChallengeDetails challengeDetails = new ChallengeDetails();     //TODO do the searchinfg in service, not here
         Optional<Challenge> challenge = challengeRepository.findById(chall_id);
         if (challenge.isPresent()) {
@@ -118,7 +117,21 @@ public class UiApplication {
     }
 
 
+    @GetMapping("challenges/{chall_id}/exercises")
+    public ResponseEntity<List<Exercise>> getChallengeExercises(@PathVariable("chall_id") Long chall_id) {
+        Optional<Challenge> challenge = challengeRepository.findById(chall_id);
+        if (challenge.isPresent()) {
+            Challenge challengeToDisplay = challenge.get();
+            List<Exercise> exercisesToDisplay = new LinkedList<>();
+            List<ChallengeExercise> challengeExercisesList = challengeExerciseRepository.findAllByChall(challengeToDisplay);
+            for (ChallengeExercise challengeExercise : challengeExercisesList) {
+                exercisesToDisplay.add(challengeExercise.getExer());
+            }
+            return new ResponseEntity<>(exercisesToDisplay, HttpStatus.OK);
 
+        }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
 
     @PostMapping("/challenges")
     public ResponseEntity addChallenge(@RequestBody String challengeName) {
