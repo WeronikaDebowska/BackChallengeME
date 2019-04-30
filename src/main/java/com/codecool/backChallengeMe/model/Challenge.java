@@ -3,6 +3,7 @@ package com.codecool.backChallengeMe.model;
 
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Table(name = "Challenges")
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Challenge implements Serializable {
 
     @Id
@@ -30,14 +32,25 @@ public class Challenge implements Serializable {
     private Timestamp finish;
 
     @ManyToMany(mappedBy = "taggedChallengesList")
+    @Transient
     private List<Tag> challengeTagList;
 
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)
+    @Transient
     private Set<ChallengeUser> challengesUsersSet = new HashSet<>();
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)
+    @Transient
     private Set<ChallengeExercise> challengesExercisesSet = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "challenge",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Transient
+    private Set<Execution> executionSet = new HashSet<>();
 
     public Challenge() {
     }

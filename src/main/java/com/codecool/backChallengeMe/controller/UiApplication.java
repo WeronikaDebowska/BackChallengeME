@@ -6,6 +6,7 @@ import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import com.codecool.backChallengeMe.model.responses.ChallengeDetails;
 import com.codecool.backChallengeMe.model.responses.ChallengeParticipants;
 import com.codecool.backChallengeMe.model.responses.ChallengeUserDetails;
+import com.codecool.backChallengeMe.model.responses.ExecutionDetails;
 import com.codecool.backChallengeMe.services.ResponseService;
 import com.codecool.backChallengeMe.services.MyUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,9 @@ public class UiApplication {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ExecutionRepository executionRepository;
 
     @Autowired
     private ResponseService challengeUserService;
@@ -133,11 +137,27 @@ public class UiApplication {
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("user/{user_id}/challenges/{chall_id}/executions")
+    public ResponseEntity<List<ExecutionDetails>> getExecutions(@PathVariable("user_id") Long user_id, @PathVariable("chall_id") Long chall_id) {
+        Optional<Challenge> challenge = challengeRepository.findById(chall_id);
+        Optional<User> user = userRepository.findById(user_id);
+        if (challenge.isPresent() && user.isPresent()) {
+            List<Execution> executionList = executionRepository.findExecutionsByChallengeAndUser(challenge.get(), user.get());
+            List<ExecutionDetails> executionDetailsList = new LinkedList<>();
+            for (Execution execution : executionList) {
+                executionDetailsList.add(new ExecutionDetails(execution.getId(), execution.getRepeats(), execution.getDate(), execution.getExercise()));
+            }
+            return new ResponseEntity<>(executionDetailsList, HttpStatus.OK);
+        }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
+
     @PostMapping("/challenges")
     public ResponseEntity addChallenge(@RequestBody String challengeName) {
         //TODO add new challenge to DB
         return new ResponseEntity(HttpStatus.OK);
     }
+
 
 //    @PostMapping("/challenges/{chall_id}/exercises")
 //    public ResponseEntity addExercisesToChallenge(@PathVariable(value = "chall_id") Long chall_id, @RequestBody )

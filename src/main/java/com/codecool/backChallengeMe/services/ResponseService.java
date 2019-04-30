@@ -41,6 +41,9 @@ public class ResponseService {
         System.out.println(user.getId());
 
         List<ChallengeUser> challengeUserSet = challengeUserRepository.findAllByUser(user);
+//        for (Challenge challenge : challengeUserSet){
+//            System.out.println(challenge.getName());
+//        }
 
         for (ChallengeUser challengeUser : challengeUserSet) {
             ChallengeUserDetails challengeDetails = new ChallengeUserDetails().setDetails(challengeUser);

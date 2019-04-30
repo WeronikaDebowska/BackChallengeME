@@ -28,6 +28,14 @@ public class Exercise implements Serializable {
     @Transient
     private transient Set<ChallengeExercise> challengesExercisesSet;
 
+    @OneToMany(
+            mappedBy = "exer",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Transient
+    private Set<Execution> executionSet;
+
     public Exercise() {
     }
 

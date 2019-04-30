@@ -1,10 +1,12 @@
 package com.codecool.backChallengeMe.model;
 
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -12,6 +14,8 @@ import java.util.Set;
 @Entity(name = "Users")
 @Component
 @Getter
+@Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
 
@@ -23,8 +27,17 @@ public class User {
     private String username;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
+    @Transient
     Set<ChallengeUser> challengesUsersSet;
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Transient
+    List<Execution> executionList;
 
 
     @Override
