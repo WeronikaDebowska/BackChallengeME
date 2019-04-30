@@ -1,59 +1,86 @@
 package com.codecool.backChallengeMe.services;
 
 
-import com.codecool.backChallengeMe.DAO.ChallengeExerciseRepository;
-import com.codecool.backChallengeMe.DAO.ChallengeRepository;
-import com.codecool.backChallengeMe.DAO.ChallengeUserRepository;
-import com.codecool.backChallengeMe.DAO.UserRepository;
+import com.codecool.backChallengeMe.DAO.*;
 import com.codecool.backChallengeMe.model.*;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
-import com.codecool.backChallengeMe.model.responses.ChallengeDetails;
-import com.codecool.backChallengeMe.model.responses.ChallengeParticipants;
-import com.codecool.backChallengeMe.model.responses.ChallengeUserDetails;
-import com.codecool.backChallengeMe.model.responses.Participant;
+import com.codecool.backChallengeMe.model.responses.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
 
 @Service
 public class ResponseService {
 
-    @Autowired
     private UserRepository userRepository;
-
     private ChallengeRepository challengeRepository;
-
-    @Autowired
+    private ExecutionRepository executionRepository;
     private ChallengeUserRepository challengeUserRepository;
-
-    @Autowired
-    private ChallengeDetails challengeDetails;
-
-    @Autowired
     private ChallengeExerciseRepository challengeExerciseRepository;
 
 
-    public void createChallengeUserDetailsResponse(Long id, List<ChallengeUserDetails> allChallengesDetails) {
-        User user = userRepository.findUserById(id);
-        System.out.println(user.getUsername());
-        System.out.println(user.getId());
+    @Autowired
+    public ResponseService(UserRepository userRepository, ChallengeRepository challengeRepository, ExecutionRepository executionRepository, ChallengeUserRepository challengeUserRepository, ChallengeExerciseRepository challengeExerciseRepository) {
+        this.userRepository = userRepository;
+        this.challengeRepository = challengeRepository;
+        this.executionRepository = executionRepository;
+        this.challengeUserRepository = challengeUserRepository;
+        this.challengeExerciseRepository = challengeExerciseRepository;
+    }
 
-        List<ChallengeUser> challengeUserSet = challengeUserRepository.findAllByUser(user);
-//        for (Challenge challenge : challengeUserSet){
-//            System.out.println(challenge.getName());
-//        }
 
-        for (ChallengeUser challengeUser : challengeUserSet) {
-            ChallengeUserDetails challengeDetails = new ChallengeUserDetails().setDetails(challengeUser);
-            allChallengesDetails.add(challengeDetails);
-            System.out.println(challengeUser.getChall().getName());
+    //methods to create response to "/user" url
 
+    public String getStringUserId(Authentication principal) {
+        String username = ((MyUserPrincipal) principal.getPrincipal()).getUsername();
+        User user = userRepository.findByUsername(username);
+        Long id = user.getId();
+        return "{\"id\": \"" + id + "\"}";
+    }
+
+    //methods to create response to "/users/{user_id}/challenges" url
+
+    public ResponseEntity<List<ChallengeUserDetails>> createUserAllChallengesDetailsResponse(Long user_id) {
+        Optional<User> user = userRepository.findById(user_id);
+        if (user.isPresent()) {
+            List<ChallengeUserDetails> allChallengesDetails = getAllChallengeUserDetailsResponse(user_id);
+            return new ResponseEntity<>(allChallengesDetails, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    public ChallengeDetails createChallengeDetailsResponse(Challenge challenge) {
+
+    private List<ChallengeUserDetails> getAllChallengeUserDetailsResponse(Long id) {
+        List<ChallengeUserDetails> allChallengesDetails = new LinkedList<>();
+        User user = userRepository.findUserById(id);
+        List<ChallengeUser> challengeUserSet = challengeUserRepository.findAllByUser(user);
+        for (ChallengeUser challengeUser : challengeUserSet) {
+            ChallengeUserDetails challengeDetails = new ChallengeUserDetails().setDetails(challengeUser);
+            allChallengesDetails.add(challengeDetails);
+        }
+        return allChallengesDetails;
+    }
+
+    //methods to create response to "challenges/{chall_id}" url
+
+    public ResponseEntity<ChallengeDetails> createChallengeDetailsResponse(Long chall_id) {
+        Optional<Challenge> challenge = getChallengeById(chall_id);
+        if (challenge.isPresent()) {
+            ChallengeDetails challengeDetails = getChallengeDetails(challenge.get());
+            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private ChallengeDetails getChallengeDetails(Challenge challenge) {
 
         Map<Long, String> participants = new HashMap<>();
         for (ChallengeUser challengeUser : challengeUserRepository.findAllByChall(challenge)) {
@@ -70,16 +97,19 @@ public class ResponseService {
         return new ChallengeDetails(challenge.getId(), challenge.getName(), participants, exercises);
     }
 
-    public void setParticipantsChallengeAccomlishmentPercentage(List<Participant> participantsList) {
-        int i = 0;
-        for (Participant participant : participantsList) {
-            participant.setChallengeAcomplishmentProcentage(50 + i * (-1) ^ i * 5); // TODO count real percentage
-            i++;
-        }
 
+    //methods to create response to "challenges/{chall_id}/paticipants" url
+
+    public ResponseEntity<ChallengeParticipants> createChallengeParticipantsResponse(Long chall_id) {
+        Optional<Challenge> challenge = getChallengeById(chall_id);
+        if (challenge.isPresent()) {
+            ChallengeParticipants challengeParticipants = getChallengeParticipants(challenge.get());
+            return new ResponseEntity<>(challengeParticipants, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ChallengeParticipants createChallengeParticipantsResponse(Challenge challengeToDisplay) {
+    private ChallengeParticipants getChallengeParticipants(Challenge challengeToDisplay) {
         List<ChallengeUser> challengeUsers = challengeUserRepository.findAllByChall(challengeToDisplay);
         List<Participant> participantsList = new LinkedList<>();
         for (ChallengeUser challengeUser : challengeUsers) {
@@ -87,9 +117,68 @@ public class ResponseService {
             participantsList.add(participant);
         }
         ChallengeParticipants challengeParticipants = new ChallengeParticipants(challengeToDisplay.getId(), challengeToDisplay.getName());
-        setParticipantsChallengeAccomlishmentPercentage(participantsList);
+        setParticipantsChallengeAccomplishmentPercentage(participantsList);
 
         challengeParticipants.setParticipantList(participantsList);
         return challengeParticipants;
     }
+
+    //mocking various  accomplishment percentage TODO count real percentage
+    private void setParticipantsChallengeAccomplishmentPercentage(List<Participant> participantsList) {
+        int i = 0;
+        for (Participant participant : participantsList) {
+            participant.setChallengeAcomplishmentProcentage(50 + i * (-1) ^ i * 5);
+            i++;
+        }
+    }
+
+    //methods to create response to "challenges/{chall_id}/exercises" url
+
+    public ResponseEntity<List<Exercise>> createChallengeExerciseListResponse(Long chall_id) {
+        Optional<Challenge> challenge = getChallengeById(chall_id);
+        if (challenge.isPresent()) {
+            List<Exercise> exercisesToDisplay = getExerciseList(challenge.get());
+            return new ResponseEntity<>(exercisesToDisplay, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    private List<Exercise> getExerciseList(Challenge challenge) {
+        List<Exercise> exercisesToDisplay = new LinkedList<>();
+        List<ChallengeExercise> challengeExercisesList = challengeExerciseRepository.findAllByChall(challenge);
+        for (ChallengeExercise challengeExercise : challengeExercisesList) {
+            exercisesToDisplay.add(challengeExercise.getExer());
+        }
+        return exercisesToDisplay;
+    }
+
+    //methods to create response to "challenges/{chall_id}/executions" url
+
+
+    public ResponseEntity<List<ExecutionDetails>> createChallengeUserExecution(Long user_id, Long chall_id) {
+        Optional<Challenge> challenge = getChallengeById(chall_id);
+        Optional<User> user = userRepository.findById(user_id);
+        if (challenge.isPresent() && user.isPresent()) {
+            List<ExecutionDetails> executionDetailsList = getExecutionDetails(challenge.get(), user.get());
+            return new ResponseEntity<>(executionDetailsList, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    private List<ExecutionDetails> getExecutionDetails(Challenge challenge, User user) {
+        List<Execution> executionList = executionRepository.findExecutionsByChallengeAndUser(challenge, user);
+        List<ExecutionDetails> executionDetailsList = new LinkedList<>();
+        for (Execution execution : executionList) {
+            executionDetailsList.add(new ExecutionDetails(execution.getId(), execution.getRepeats(), execution.getDate(), execution.getExercise()));
+        }
+        return executionDetailsList;
+    }
+
+
+    //utils
+
+    public Optional<Challenge> getChallengeById(@PathVariable("chall_id") Long chall_id) {
+        return challengeRepository.findById(chall_id);
+    }
+
 }
