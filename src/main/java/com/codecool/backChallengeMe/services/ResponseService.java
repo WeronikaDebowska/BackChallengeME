@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ResponseService {
@@ -58,14 +59,13 @@ public class ResponseService {
 
 
     private List<ChallengeUserDetails> getAllChallengeUserDetailsResponse(Long id) {
-        List<ChallengeUserDetails> allChallengesDetails = new LinkedList<>();
+
         User user = userRepository.findUserById(id);
-        List<ChallengeUser> challengeUserSet = challengeUserRepository.findAllByUser(user);
-        for (ChallengeUser challengeUser : challengeUserSet) {
-            ChallengeUserDetails challengeDetails = new ChallengeUserDetails().setDetails(challengeUser);
-            allChallengesDetails.add(challengeDetails);
-        }
-        return allChallengesDetails;
+        Set<ChallengeUser> challengeUserSet = user.getChallengesUsersSet();
+
+        return challengeUserSet.stream()
+                .map(challengeUser -> new ChallengeUserDetails().setDetails(challengeUser))
+                .collect(Collectors.toList());
     }
 
     //methods to create response to "challenges/{chall_id}" url

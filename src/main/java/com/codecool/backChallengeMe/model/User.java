@@ -28,7 +28,6 @@ public class User {
 
 
     @OneToMany(mappedBy = "user")
-    @Transient
     Set<ChallengeUser> challengesUsersSet;
 
     @OneToMany(
