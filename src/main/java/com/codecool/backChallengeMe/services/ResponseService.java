@@ -22,16 +22,14 @@ public class ResponseService {
     private UserRepository userRepository;
     private ChallengeRepository challengeRepository;
     private ExecutionRepository executionRepository;
-    private ChallengeUserRepository challengeUserRepository;
     private ChallengeExerciseRepository challengeExerciseRepository;
 
 
     @Autowired
-    public ResponseService(UserRepository userRepository, ChallengeRepository challengeRepository, ExecutionRepository executionRepository, ChallengeUserRepository challengeUserRepository, ChallengeExerciseRepository challengeExerciseRepository) {
+    public ResponseService(UserRepository userRepository, ChallengeRepository challengeRepository, ExecutionRepository executionRepository, ChallengeExerciseRepository challengeExerciseRepository) {
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.executionRepository = executionRepository;
-        this.challengeUserRepository = challengeUserRepository;
         this.challengeExerciseRepository = challengeExerciseRepository;
     }
 
@@ -83,10 +81,9 @@ public class ResponseService {
     private ChallengeDetails getChallengeDetails(Challenge challenge) {
 
         Map<Long, String> participants = new HashMap<>();
-        for (ChallengeUser challengeUser : challengeUserRepository.findAllByChall(challenge)) {
-            User user = challengeUser.getUser();
-            participants.put(user.getId(), user.getUsername());
-        }
+        challenge.getChallengesUsers()
+                .forEach(challengeUser -> participants.put(challengeUser.getUser().getId(), challengeUser.getUser().getUsername()));
+
 
         Map<Long, String> exercises = new HashMap<>();
         for (ChallengeExercise challengeExercise : challengeExerciseRepository.findAllByChall(challenge)) {
@@ -110,16 +107,17 @@ public class ResponseService {
     }
 
     private ChallengeParticipants getChallengeParticipants(Challenge challengeToDisplay) {
-        List<ChallengeUser> challengeUsers = challengeUserRepository.findAllByChall(challengeToDisplay);
-        List<Participant> participantsList = new LinkedList<>();
-        for (ChallengeUser challengeUser : challengeUsers) {
-            Participant participant = new Participant(challengeUser.getUser().getId(), challengeUser.getUser().getUsername(), challengeUser.getUserRole());
-            participantsList.add(participant);
-        }
-        ChallengeParticipants challengeParticipants = new ChallengeParticipants(challengeToDisplay.getId(), challengeToDisplay.getName());
-        setParticipantsChallengeAccomplishmentPercentage(participantsList);
 
+        List<ChallengeUser> challengeUsers = challengeToDisplay.getChallengesUsers();
+        ChallengeParticipants challengeParticipants = new ChallengeParticipants(challengeToDisplay.getId(), challengeToDisplay.getName());
+
+        List<Participant> participantsList = challengeUsers.stream()
+                .map(challengeUser -> new Participant(challengeUser.getUser().getId(), challengeUser.getUser().getUsername(), challengeUser.getUserRole()))
+                .collect(Collectors.toList());
+
+        setParticipantsChallengeAccomplishmentPercentage(participantsList);
         challengeParticipants.setParticipantList(participantsList);
+
         return challengeParticipants;
     }
 
