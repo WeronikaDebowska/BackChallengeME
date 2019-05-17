@@ -80,7 +80,7 @@ public class ResponseService {
         Map<Long, String> exercises = new HashMap<>();
         challenge.getChallengesExercisesSet().stream()
                 .map(ChallengeExercise::getExer)
-                .forEach(exercise -> exercises.put(exercise.getId(), exercise.getName()));
+                .forEach(exercise -> exercises.put(exercise.getExerciseId(), exercise.getExerciseName()));
 
         return new ChallengeDetails(challenge, exercises, participants);
     }

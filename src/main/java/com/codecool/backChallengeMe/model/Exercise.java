@@ -19,9 +19,14 @@ public class Exercise implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String name;
-    private String description;
+    @Column(name = "id")
+    private Long exerciseId;
+
+    @Column(name = "name")
+    private String exerciseName;
+
+    @Column(name = "description")
+    private String exerciseDescription;
 
 
     @OneToMany(mappedBy = "exer")
@@ -40,8 +45,8 @@ public class Exercise implements Serializable {
     }
 
     public Exercise(String name, String description) {
-        this.name = name;
-        this.description = description;
+        this.exerciseName = name;
+        this.exerciseDescription = description;
     }
 
     @Override
@@ -49,11 +54,11 @@ public class Exercise implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Exercise ex = (Exercise) o;
-        return Objects.equals(name, ex.name);
+        return Objects.equals(exerciseName, ex.exerciseName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(exerciseName);
     }
 }
