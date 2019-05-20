@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope(value = "prototype")
@@ -25,7 +26,7 @@ public class ChallengeUserDetails implements Serializable {
     private Date start;
     private Date finish;
     private Integer accomplishmentPercentage;
-    private List<Tag> tagList = new LinkedList();
+    private List<String> tagList = new LinkedList();
 
     public ChallengeUserDetails() {
     }
@@ -38,6 +39,8 @@ public class ChallengeUserDetails implements Serializable {
         this.start = challengeUser.getChall().getStart();
         this.finish = challengeUser.getChall().getFinish();
         this.accomplishmentPercentage = 50; //TODO count exact percentage from db
-        this.tagList = challengeUser.getChall().getChallengeTagList();
+        this.tagList = challengeUser.getChall().getChallengeTagList().stream()
+                .map(tag -> tag.getTagName())
+                .collect(Collectors.toList());
     }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -21,10 +22,10 @@ public class Tag {
     @Column(name = "tag_name")
     private String tagName;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "challenges_tags",
-            joinColumns = @JoinColumn(name = "chall_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private List<Challenge> taggedChallengesList;
+            joinColumns = @JoinColumn(name = "tag_id"),
+            inverseJoinColumns = @JoinColumn(name = "chall_id"))
+    private List<Challenge> challenges = new LinkedList<>();
 }

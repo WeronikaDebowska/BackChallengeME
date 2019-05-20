@@ -28,8 +28,8 @@ public class Challenge implements Serializable {
     private Timestamp start;
     private Timestamp finish;
 
-    @ManyToMany(mappedBy = "taggedChallengesList")
-    private List<Tag> challengeTagList;
+    @ManyToMany(mappedBy = "challenges", fetch = FetchType.LAZY)
+    private List<Tag> challengeTagList = new LinkedList<>();
 
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)

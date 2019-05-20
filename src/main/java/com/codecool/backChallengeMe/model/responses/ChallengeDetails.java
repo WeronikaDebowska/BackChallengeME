@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Scope(value = "prototype")
@@ -23,7 +24,7 @@ public class ChallengeDetails implements Serializable {
     private Timestamp start;
     private Timestamp finish;
 
-    private List<Tag> tagList;
+    private List<String> tagList;
 
     private Map<Long, String> challengeExercises = new HashMap<>();
     private Map<Long, String> participants = new HashMap<>();
@@ -40,6 +41,9 @@ public class ChallengeDetails implements Serializable {
         this.participants = participants;
         this.start = challenge.getStart();
         this.finish = challenge.getFinish();
-        this.tagList = challenge.getChallengeTagList();
+        System.out.println("tags     " + challenge.getChallengeTagList());
+        this.tagList = challenge.getChallengeTagList().stream()
+                .map(tag -> tag.getTagName())
+                .collect(Collectors.toList());
     }
 }
