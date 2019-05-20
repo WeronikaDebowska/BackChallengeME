@@ -53,38 +53,37 @@ public class UiApplication {
         return "logoutSuccessfulPage";
     }
 
-    @GetMapping("/user")
+    @GetMapping("/user")    //TODO should return user profile
     public String user(Principal principal) {
         return responseService.getStringUserId((Authentication) principal);
     }
 
     @GetMapping("/users/{user_id}/challenges")
-    public ResponseEntity<List<ChallengeUserDetails>> getUserChallenges(@PathVariable("user_id") Long user_id) {
-        return responseService.createUserAllChallengesDetailsResponse(user_id);
+    public ResponseEntity<List<ChallengeUserDetails>> getUserChallenges(@PathVariable("user_id") Long userId) {
+        return responseService.createUserAllChallengesDetailsResponse(userId);
     }
 
-
     @GetMapping("/challenges/{chall_id}")
-    public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long chall_id) {
-        return responseService.createChallengeDetailsResponse(chall_id);
+    public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long challId) {
+        return responseService.createChallengeDetailsResponse(challId);
     }
 
 
     @GetMapping("challenges/{chall_id}/participants")
-    public ResponseEntity<ChallengeParticipants> getChallengeParticipants(@PathVariable("chall_id") Long chall_id) {
-        return responseService.createChallengeParticipantsResponse(chall_id);
+    public ResponseEntity<ChallengeParticipants> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
+        return responseService.createChallengeParticipantsResponse(challId);
     }
 
 
     @GetMapping("challenges/{chall_id}/exercises")
-    public ResponseEntity<List<Exercise>> getChallengeExercises(@PathVariable("chall_id") Long chall_id) {
-        return responseService.createChallengeExerciseListResponse(chall_id);
+    public ResponseEntity<List<Exercise>> getChallengeExercises(@PathVariable("chall_id") Long challId) {
+        return responseService.createChallengeExerciseListResponse(challId);
     }
 
 
     @GetMapping("users/{user_id}/challenges/{chall_id}/executions")
-    public ResponseEntity<List<ExecutionDetails>> getExecutions(@PathVariable("user_id") Long user_id, @PathVariable("chall_id") Long chall_id) {
-        return responseService.createChallengeUserExecution(user_id, chall_id);
+    public ResponseEntity<List<ExecutionDetails>> getExecutions(@PathVariable("user_id") Long userId, @PathVariable("chall_id") Long challId) {
+        return responseService.createChallengeUserExecution(userId, challId);
     }
 
     @PostMapping("/challenges")
