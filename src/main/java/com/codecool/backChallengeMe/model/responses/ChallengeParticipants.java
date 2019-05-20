@@ -1,5 +1,6 @@
 package com.codecool.backChallengeMe.model.responses;
 
+import com.codecool.backChallengeMe.model.Challenge;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Scope;
@@ -26,6 +27,12 @@ public class ChallengeParticipants {
     public ChallengeParticipants(Long chall_Id, String challengeName) {
         this.chall_Id = chall_Id;
         this.challengeName = challengeName;
+    }
+
+    public ChallengeParticipants(Challenge challenge, List<Participant> participantList) {
+        this.chall_Id = challenge.getId();
+        this.challengeName = challenge.getName();
+        this.participantList = participantList;
     }
 
 }

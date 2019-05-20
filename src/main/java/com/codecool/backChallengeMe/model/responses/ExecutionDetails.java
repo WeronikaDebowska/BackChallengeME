@@ -1,5 +1,6 @@
 package com.codecool.backChallengeMe.model.responses;
 
+import com.codecool.backChallengeMe.model.Execution;
 import com.codecool.backChallengeMe.model.Exercise;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,5 +29,12 @@ public class ExecutionDetails implements Serializable {
         this.repeats = repeats;
         this.date = date;
         this.exercise = exercise;
+    }
+
+    public ExecutionDetails(Execution execution) {
+        this.id = execution.getId();
+        this.repeats = execution.getRepeats();
+        this.date = execution.getDate();
+        this.exercise = execution.getExercise();
     }
 }

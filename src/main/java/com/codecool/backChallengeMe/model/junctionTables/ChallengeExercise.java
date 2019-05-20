@@ -32,7 +32,7 @@ public class ChallengeExercise implements Serializable {
     public ChallengeExercise(Challenge challenge, Exercise exercise) {
         this.chall = challenge;
         this.exer = exercise;
-        this.id = new ChallengesExercisesId(challenge.getId(), exercise.getId());
+        this.id = new ChallengesExercisesId(challenge.getId(), exercise.getExerciseId());
     }
 
     @Override

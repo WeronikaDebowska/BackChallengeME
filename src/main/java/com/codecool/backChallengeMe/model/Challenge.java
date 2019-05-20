@@ -10,10 +10,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "Challenges")
@@ -32,16 +29,13 @@ public class Challenge implements Serializable {
     private Timestamp finish;
 
     @ManyToMany(mappedBy = "taggedChallengesList")
-    @Transient
     private List<Tag> challengeTagList;
 
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)
-    @Transient
-    private Set<ChallengeUser> challengesUsersSet = new HashSet<>();
+    private List<ChallengeUser> challengesUsers = new LinkedList<>();
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)
-    @Transient
     private Set<ChallengeExercise> challengesExercisesSet = new HashSet<>();
 
     @OneToMany(

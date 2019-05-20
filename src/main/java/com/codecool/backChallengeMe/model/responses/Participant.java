@@ -1,6 +1,8 @@
 package com.codecool.backChallengeMe.model.responses;
 
 
+import com.codecool.backChallengeMe.model.User;
+import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Scope;
@@ -27,4 +29,19 @@ public class Participant {
         this.role = role;
 
     }
+
+    public Participant(ChallengeUser challengeUser) {
+        User user = challengeUser.getUser();
+        this.participantId = user.getId();
+        this.participantName = user.getUsername();
+        this.role = challengeUser.getUserRole();
+    }
+
+
+    //mocking various  accomplishment percentage TODO count real percentage
+    public void setParticipantChallengeAccomplishmentPercentage(int i) {
+        this.challengeAcomplishmentProcentage = 50 + i * (-1) ^ i * 5;
+    }
+
 }
+

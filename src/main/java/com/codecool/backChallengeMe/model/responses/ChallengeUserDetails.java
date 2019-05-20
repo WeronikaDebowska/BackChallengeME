@@ -25,12 +25,12 @@ public class ChallengeUserDetails implements Serializable {
     private Date start;
     private Date finish;
     private Integer accomplishmentPercentage;
-    private LinkedList<String> tagList = new LinkedList();
+    private List<Tag> tagList = new LinkedList();
 
     public ChallengeUserDetails() {
     }
 
-    public ChallengeUserDetails setDetails(ChallengeUser challengeUser) {
+    public ChallengeUserDetails(ChallengeUser challengeUser) {
         this.challengeName = challengeUser.getChall().getName();
         this.challengeId = challengeUser.getChall().getId();
         this.userRole = challengeUser.getUserRole();
@@ -38,11 +38,6 @@ public class ChallengeUserDetails implements Serializable {
         this.start = challengeUser.getChall().getStart();
         this.finish = challengeUser.getChall().getFinish();
         this.accomplishmentPercentage = 50; //TODO count exact percentage from db
-        tagList.add("Buttocks");                    //TODO add tags of exercises included in challenge from db
-        tagList.add("Strength");
-
-
-
-        return this;
+        this.tagList = challengeUser.getChall().getChallengeTagList();
     }
 }

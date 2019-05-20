@@ -53,7 +53,7 @@ public class ResponseService {
 
     private List<ChallengeUserDetails> getAllChallengeUserDetailsResponse(User user) {
         return user.getChallengesUsersSet().stream()
-                .map(challengeUser -> new ChallengeUserDetails().setDetails(challengeUser))
+                .map(challengeUser -> new ChallengeUserDetails(challengeUser))
                 .collect(Collectors.toList());
     }
 
