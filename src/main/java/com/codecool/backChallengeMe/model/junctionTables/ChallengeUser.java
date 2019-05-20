@@ -27,7 +27,9 @@ public class ChallengeUser implements Serializable {
     private User user;
 
     private String userRole;
-    private String challenge_status;
+
+    @Column(name = "challenge_status")
+    private String challengeStatus;
 
     public ChallengeUser() {
     }
