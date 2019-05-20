@@ -21,8 +21,6 @@ public class ChallengeBasicInfo {
     private Long challengeId;
     private String challengeName;
 
-    private String status;
-
     private Timestamp start;
     private Timestamp finish;
 

@@ -19,7 +19,8 @@ public class ExecutionDetails implements Serializable {
     private Long id;
     private Integer repeats;
     private Timestamp date;
-    private Exercise exercise;
+    private Long exerciseId;
+    private String exerciseName;
 
     public ExecutionDetails() {
     }
@@ -28,13 +29,13 @@ public class ExecutionDetails implements Serializable {
         this.id = id;
         this.repeats = repeats;
         this.date = date;
-        this.exercise = exercise;
     }
 
     public ExecutionDetails(Execution execution) {
         this.id = execution.getId();
         this.repeats = execution.getRepeats();
         this.date = execution.getDate();
-        this.exercise = execution.getExercise();
+        this.exerciseId = execution.getExercise().getExerciseId();
+        this.exerciseName = execution.getExercise().getExerciseName();
     }
 }

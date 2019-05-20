@@ -18,7 +18,7 @@ public class ChallengeUserDetails extends ChallengeBasicInfo implements Serializ
 
     private String userRole;        //TODO change String into enum UserRole and map with DB
     private String challengeStatus; //TODO change String into enum ChallengeStatus and map with DB
-    private Integer accomplishmentPercentage = 0;
+    private Double accomplishmentPercentage = 0.0;
 
     public ChallengeUserDetails() {
     }
@@ -27,7 +27,6 @@ public class ChallengeUserDetails extends ChallengeBasicInfo implements Serializ
         super(challengeUser.getChall());
         this.userRole = challengeUser.getUserRole();
         this.challengeStatus = challengeUser.getChallengeStatus();
-        ; //TODO count exact percentage from db
 
     }
 }

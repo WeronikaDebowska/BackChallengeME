@@ -20,13 +20,15 @@ public class ResponseService {
     private UserRepository userRepository;
     private ChallengeRepository challengeRepository;
     private ExecutionRepository executionRepository;
+    private StatsService statsService;
 
 
     @Autowired
-    public ResponseService(UserRepository userRepository, ChallengeRepository challengeRepository, ExecutionRepository executionRepository) {
+    public ResponseService(UserRepository userRepository, ChallengeRepository challengeRepository, ExecutionRepository executionRepository, StatsService statsService) {
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.executionRepository = executionRepository;
+        this.statsService = statsService;
     }
 
 
@@ -51,10 +53,19 @@ public class ResponseService {
         }
     }
 
+
     private List<ChallengeUserDetails> getAllChallengeUserDetailsResponse(User user) {
-        return user.getChallengesUsersSet().stream()
-                .map(ChallengeUserDetails::new)
-                .collect(Collectors.toList());
+
+        List<ChallengeUserDetails> challengeUserDetailsList = new LinkedList<>();
+
+        for (ChallengeUser challengeUser : user.getChallengesUsersSet()) {
+            ChallengeUserDetails challengeUserDetails = new ChallengeUserDetails(challengeUser);
+            double percentage = statsService.countParticipantChallengeAccomplishmentPercentage(challengeUser);
+            challengeUserDetails.setAccomplishmentPercentage(percentage);
+            challengeUserDetailsList.add(challengeUserDetails);
+        }
+
+        return challengeUserDetailsList;
     }
 
     //methods to create response to "challenges/{chall_id}" url
@@ -83,16 +94,6 @@ public class ResponseService {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
-//    private ChallengeParticipants getChallengeParticipants(Challenge challengeToDisplay) {
-//        List<Participant> participantList = createParticipantList(challengeToDisplay);
-//        setAccomplishmentToAllParticipants(participantList);
-//        return new ChallengeParticipants(challengeToDisplay, participantList);
-//    }
-
-//    private void setAccomplishmentToAllParticipants(List<Participant> participantsList) {
-//        participantsList.forEach(participant -> participant.setChallengeAcomplishmentProcentage(52));
-//    }
 
     private List<Participant> createParticipantList(Challenge challenge) {
         return challenge.getChallengesUsers().stream()
