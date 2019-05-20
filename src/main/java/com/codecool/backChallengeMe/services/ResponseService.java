@@ -53,62 +53,49 @@ public class ResponseService {
 
     private List<ChallengeUserDetails> getAllChallengeUserDetailsResponse(User user) {
         return user.getChallengesUsersSet().stream()
-                .map(challengeUser -> new ChallengeUserDetails(challengeUser))
+                .map(ChallengeUserDetails::new)
                 .collect(Collectors.toList());
     }
 
     //methods to create response to "challenges/{chall_id}" url
 
-    public ResponseEntity<ChallengeDetails> createChallengeDetailsResponse(Long challId) {
+    public ResponseEntity<ChallengeDetails> createChallengeBasicResponse(Long challId) {
         Optional<Challenge> challenge = getChallengeById(challId);
         if (challenge.isPresent()) {
-            ChallengeDetails challengeDetails = getChallengeDetails(challenge.get());
+            ChallengeDetails challengeDetails = new ChallengeDetails(challenge.get());
+            challengeDetails.setParticipants(createParticipantList(challenge.get()));
+            challengeDetails.setExercises(getExerciseList(challenge.get()));
             return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    private ChallengeDetails getChallengeDetails(Challenge challenge) {
-
-        Map<Long, String> participants = new HashMap<>();
-        challenge.getChallengesUsers().stream()
-                .map(ChallengeUser::getUser)
-                .forEach(user -> participants.put(user.getId(), user.getUsername()));
-
-
-        Map<Long, String> exercises = new HashMap<>();
-        challenge.getChallengesExercisesSet().stream()
-                .map(ChallengeExercise::getExer)
-                .forEach(exercise -> exercises.put(exercise.getExerciseId(), exercise.getExerciseName()));
-
-        return new ChallengeDetails(challenge, exercises, participants);
-    }
-
 
     //methods to create response to "challenges/{chall_id}/paticipants" url
 
-    public ResponseEntity<ChallengeParticipants> createChallengeParticipantsResponse(Long chall_id) {
+    public ResponseEntity<ChallengeDetails> createChallengeParticipantsResponse(Long chall_id) {
         Optional<Challenge> challenge = getChallengeById(chall_id);
         if (challenge.isPresent()) {
-            ChallengeParticipants challengeParticipants = getChallengeParticipants(challenge.get());
-            return new ResponseEntity<>(challengeParticipants, HttpStatus.OK);
+            ChallengeDetails challengeDetails = new ChallengeDetails(challenge.get());
+            challengeDetails.setParticipants(createParticipantList(challenge.get()));
+            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    private ChallengeParticipants getChallengeParticipants(Challenge challengeToDisplay) {
-        List<Participant> participantsList = createParticipantsList(challengeToDisplay.getChallengesUsers());
-        setAccomplishmentToAllParticipants(participantsList);
-        return new ChallengeParticipants(challengeToDisplay, participantsList);
-    }
+//    private ChallengeParticipants getChallengeParticipants(Challenge challengeToDisplay) {
+//        List<Participant> participantList = createParticipantList(challengeToDisplay);
+//        setAccomplishmentToAllParticipants(participantList);
+//        return new ChallengeParticipants(challengeToDisplay, participantList);
+//    }
 
-    private void setAccomplishmentToAllParticipants(List<Participant> participantsList) {
-        participantsList.forEach(participant -> participant.setChallengeAcomplishmentProcentage(52));
-    }
+//    private void setAccomplishmentToAllParticipants(List<Participant> participantsList) {
+//        participantsList.forEach(participant -> participant.setChallengeAcomplishmentProcentage(52));
+//    }
 
-    private List<Participant> createParticipantsList(List<ChallengeUser> challengeUsers) {
-        return challengeUsers.stream()
+    private List<Participant> createParticipantList(Challenge challenge) {
+        return challenge.getChallengesUsers().stream()
                 .map(Participant::new)
                 .collect(Collectors.toList());
     }
@@ -116,13 +103,15 @@ public class ResponseService {
 
     //methods to create response to "challenges/{chall_id}/exercises" url
 
-    public ResponseEntity<List<Exercise>> createChallengeExerciseListResponse(Long chall_id) {
-        Optional<Challenge> challenge = getChallengeById(chall_id);
+    public ResponseEntity<ChallengeDetails> createChallengeExerciseListResponse(Long challId) {
+        Optional<Challenge> challenge = getChallengeById(challId);
         if (challenge.isPresent()) {
-            List<Exercise> exercisesToDisplay = getExerciseList(challenge.get());
-            return new ResponseEntity<>(exercisesToDisplay, HttpStatus.OK);
+            ChallengeDetails challengeDetails = new ChallengeDetails(challenge.get());
+            challengeDetails.setExercises(getExerciseList(challenge.get()));
+            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     private List<Exercise> getExerciseList(Challenge challenge) {

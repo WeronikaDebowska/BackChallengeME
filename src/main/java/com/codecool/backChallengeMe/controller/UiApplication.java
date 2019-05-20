@@ -2,10 +2,7 @@ package com.codecool.backChallengeMe.controller;
 
 
 import com.codecool.backChallengeMe.model.*;
-import com.codecool.backChallengeMe.model.responses.ChallengeDetails;
-import com.codecool.backChallengeMe.model.responses.ChallengeParticipants;
-import com.codecool.backChallengeMe.model.responses.ChallengeUserDetails;
-import com.codecool.backChallengeMe.model.responses.ExecutionDetails;
+import com.codecool.backChallengeMe.model.responses.*;
 import com.codecool.backChallengeMe.services.ResponseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,18 +62,18 @@ public class UiApplication {
 
     @GetMapping("/challenges/{chall_id}")
     public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long challId) {
-        return responseService.createChallengeDetailsResponse(challId);
+        return responseService.createChallengeBasicResponse(challId);
     }
 
 
     @GetMapping("challenges/{chall_id}/participants")
-    public ResponseEntity<ChallengeParticipants> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
+    public ResponseEntity<ChallengeDetails> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
         return responseService.createChallengeParticipantsResponse(challId);
     }
 
 
     @GetMapping("challenges/{chall_id}/exercises")
-    public ResponseEntity<List<Exercise>> getChallengeExercises(@PathVariable("chall_id") Long challId) {
+    public ResponseEntity<ChallengeDetails> getChallengeExercises(@PathVariable("chall_id") Long challId) {
         return responseService.createChallengeExerciseListResponse(challId);
     }
 
