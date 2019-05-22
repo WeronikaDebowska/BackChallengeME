@@ -2,9 +2,6 @@ package com.codecool.backChallengeMe.model;
 
 import lombok.*;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Table(name = "tags")
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Tag {
 
     @Id
