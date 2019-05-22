@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.security.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600,
         allowedHeaders = {"*"},
@@ -57,30 +58,60 @@ public class UiApplication {
 
     @GetMapping("/users/{user_id}/challenges")
     public ResponseEntity<List<ChallengeUserDetails>> getUserChallenges(@PathVariable("user_id") Long userId) {
-        return responseService.createUserAllChallengesDetailsResponse(userId);
+        Optional<User> user = responseService.getUserById(userId);
+        if (user.isPresent()) {
+            List<ChallengeUserDetails> allChallengesDetails = responseService.getAllChallengeUserDetailsResponse(user.get());
+            return new ResponseEntity<>(allChallengesDetails, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/challenges/{chall_id}")
     public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long challId) {
-        return responseService.createChallengeBasicResponse(challId);
+        Optional<Challenge> challenge = responseService.getChallengeById(challId);
+        if (challenge.isPresent()) {
+            ChallengeDetails challengeDetails = responseService.createChallengeBasicResponse(challenge.get());
+            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 
     @GetMapping("challenges/{chall_id}/participants")
     public ResponseEntity<ChallengeDetails> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
-        return responseService.createChallengeParticipantsResponse(challId);
+
+        Optional<Challenge> challenge = responseService.getChallengeById(challId);
+        if (challenge.isPresent()) {
+            ChallengeDetails challengeDetails = responseService.createChallengeParticipantsResponse(challenge.get());
+            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
     @GetMapping("challenges/{chall_id}/exercises")
     public ResponseEntity<ChallengeDetails> getChallengeExercises(@PathVariable("chall_id") Long challId) {
-        return responseService.createChallengeExerciseListResponse(challId);
+        Optional<Challenge> challenge = responseService.getChallengeById(challId);
+        if (challenge.isPresent()) {
+            ChallengeDetails challengeDetails = responseService.createChallengeExerciseListResponse(challenge.get());
+            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 
     @GetMapping("users/{user_id}/challenges/{chall_id}/executions")
     public ResponseEntity<List<ExecutionDetails>> getExecutions(@PathVariable("user_id") Long userId, @PathVariable("chall_id") Long challId) {
-        return responseService.createChallengeUserExecution(userId, challId);
+        Optional<Challenge> challenge = responseService.getChallengeById(challId);
+        Optional<User> user = responseService.getUserById(userId);
+        if (challenge.isPresent() && user.isPresent()) {
+            List<ExecutionDetails> executionDetailsList = responseService.getExecutionDetails(challenge.get(), user.get());
+            return new ResponseEntity<>(executionDetailsList, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/challenges")

@@ -6,8 +6,6 @@ import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import com.codecool.backChallengeMe.model.responses.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -43,24 +41,14 @@ public class ResponseService {
 
     //methods to create response to "/users/{user_id}/challenges" url
 
-    public ResponseEntity<List<ChallengeUserDetails>> createUserAllChallengesDetailsResponse(Long userId) {
-        Optional<User> user = getUserById(userId);
-        if (user.isPresent()) {
-            List<ChallengeUserDetails> allChallengesDetails = getAllChallengeUserDetailsResponse(user.get());
-            return new ResponseEntity<>(allChallengesDetails, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
-
-    private List<ChallengeUserDetails> getAllChallengeUserDetailsResponse(User user) {
+    public List<ChallengeUserDetails> getAllChallengeUserDetailsResponse(User user) {
 
         List<ChallengeUserDetails> challengeUserDetailsList = new LinkedList<>();
 
         for (ChallengeUser challengeUser : user.getChallengesUsersSet()) {
             ChallengeUserDetails challengeUserDetails = new ChallengeUserDetails(challengeUser);
-            double percentage = statsService.countParticipantChallengeAccomplishmentPercentage(challengeUser);
+            double percentage = statsService.countChallAccomplishmentPercent(challengeUser);
             challengeUserDetails.setAccomplishmentPercentage(percentage);
             challengeUserDetailsList.add(challengeUserDetails);
         }
@@ -70,29 +58,21 @@ public class ResponseService {
 
     //methods to create response to "challenges/{chall_id}" url
 
-    public ResponseEntity<ChallengeDetails> createChallengeBasicResponse(Long challId) {
-        Optional<Challenge> challenge = getChallengeById(challId);
-        if (challenge.isPresent()) {
-            ChallengeDetails challengeDetails = new ChallengeDetails(challenge.get());
-            challengeDetails.setParticipants(createParticipantList(challenge.get()));
-            challengeDetails.setExercises(getExerciseList(challenge.get()));
-            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ChallengeDetails createChallengeBasicResponse(Challenge challenge) {
+        ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
+        challengeDetails.setParticipants(createParticipantList(challenge));
+        challengeDetails.setExercises(getExerciseList(challenge));
+        return challengeDetails;
     }
 
 
     //methods to create response to "challenges/{chall_id}/paticipants" url
 
-    public ResponseEntity<ChallengeDetails> createChallengeParticipantsResponse(Long chall_id) {
-        Optional<Challenge> challenge = getChallengeById(chall_id);
-        if (challenge.isPresent()) {
-            ChallengeDetails challengeDetails = new ChallengeDetails(challenge.get());
-            challengeDetails.setParticipants(createParticipantList(challenge.get()));
-            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ChallengeDetails createChallengeParticipantsResponse(Challenge challenge) {
+
+        ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
+        challengeDetails.setParticipants(createParticipantList(challenge));
+        return challengeDetails;
     }
 
     private List<Participant> createParticipantList(Challenge challenge) {
@@ -104,15 +84,12 @@ public class ResponseService {
 
     //methods to create response to "challenges/{chall_id}/exercises" url
 
-    public ResponseEntity<ChallengeDetails> createChallengeExerciseListResponse(Long challId) {
-        Optional<Challenge> challenge = getChallengeById(challId);
-        if (challenge.isPresent()) {
-            ChallengeDetails challengeDetails = new ChallengeDetails(challenge.get());
-            challengeDetails.setExercises(getExerciseList(challenge.get()));
-            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ChallengeDetails createChallengeExerciseListResponse(Challenge challenge) {
+
+        ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
+        challengeDetails.setExercises(getExerciseList(challenge));
+
+        return new ChallengeDetails(challenge);
     }
 
     private List<Exercise> getExerciseList(Challenge challenge) {
@@ -124,18 +101,7 @@ public class ResponseService {
     //methods to create response to "challenges/{chall_id}/executions" url
 
 
-    public ResponseEntity<List<ExecutionDetails>> createChallengeUserExecution(Long userId, Long challId) {
-        Optional<Challenge> challenge = getChallengeById(challId);
-        Optional<User> user = getUserById(userId);
-        if (challenge.isPresent() && user.isPresent()) {
-            List<ExecutionDetails> executionDetailsList = getExecutionDetails(challenge.get(), user.get());
-            return new ResponseEntity<>(executionDetailsList, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-
-    private List<ExecutionDetails> getExecutionDetails(Challenge challenge, User user) {
+    public List<ExecutionDetails> getExecutionDetails(Challenge challenge, User user) {
         List<Execution> executionList = executionRepository.findExecutionsByChallengeAndUser(challenge, user);
         return executionList.stream()
                 .map(ExecutionDetails::new)
@@ -145,11 +111,11 @@ public class ResponseService {
 
     //utils
 
-    private Optional<Challenge> getChallengeById(Long challId) {
+    public Optional<Challenge> getChallengeById(Long challId) {
         return challengeRepository.findById(challId);
     }
 
-    private Optional<User> getUserById(Long userId) {
+    public Optional<User> getUserById(Long userId) {
         return userRepository.findById(userId);
     }
 
