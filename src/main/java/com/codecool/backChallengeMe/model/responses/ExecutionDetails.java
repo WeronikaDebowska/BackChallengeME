@@ -25,12 +25,6 @@ public class ExecutionDetails implements Serializable {
     public ExecutionDetails() {
     }
 
-    public ExecutionDetails(Long id, Integer repeats, Timestamp date, Exercise exercise) {
-        this.id = id;
-        this.repeats = repeats;
-        this.date = date;
-    }
-
     public ExecutionDetails(Execution execution) {
         this.id = execution.getId();
         this.repeats = execution.getRepeats();

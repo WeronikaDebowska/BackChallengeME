@@ -6,11 +6,11 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 
 @Entity(name = "Challenges_exercises")
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = "chall")
 public class ChallengeExercise implements Serializable {
 
     @EmbeddedId
@@ -35,20 +35,4 @@ public class ChallengeExercise implements Serializable {
         this.id = new ChallengesExercisesId(challenge.getId(), exercise.getExerciseId());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        ChallengeExercise that = (ChallengeExercise) o;
-        return Objects.equals(chall, that.chall) &&
-                Objects.equals(exer, that.exer);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(chall, exer);
-    }
 }

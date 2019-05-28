@@ -1,6 +1,7 @@
 package com.codecool.backChallengeMe.model.responses;
 
 
+import com.codecool.backChallengeMe.model.Challenge;
 import com.codecool.backChallengeMe.model.User;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import lombok.Getter;
@@ -20,14 +21,9 @@ public class Participant {
     private int challengeAcomplishmentProcentage;
     private String role;
 
+    private User user;
+
     public Participant() {
-    }
-
-    public Participant(Long participantId, String participantName, String role) {
-        this.participantId = participantId;
-        this.participantName = participantName;
-        this.role = role;
-
     }
 
     public Participant(ChallengeUser challengeUser) {

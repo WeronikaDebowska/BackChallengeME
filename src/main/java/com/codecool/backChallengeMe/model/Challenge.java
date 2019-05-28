@@ -42,8 +42,7 @@ public class Challenge implements Serializable {
     @OneToMany(
             mappedBy = "challenge",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+            orphanRemoval = true)
     @Transient
     private Set<Execution> executionSet = new HashSet<>();
 

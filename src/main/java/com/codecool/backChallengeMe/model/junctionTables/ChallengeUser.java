@@ -11,18 +11,17 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity(name = "Challenges_users")
-@Getter
-@Setter
+@Data
 public class ChallengeUser implements Serializable {
 
     @EmbeddedId
     private ChallengesUsersId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("challId")
     private Challenge chall;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("userId")
     private User user;
 
@@ -40,21 +39,5 @@ public class ChallengeUser implements Serializable {
         this.id = new ChallengesUsersId(challenge.getId(), user.getId());
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass())
-            return false;
-        ChallengeUser that = (ChallengeUser) o;
-        return Objects.equals(chall, that.chall) &&
-                Objects.equals(user, that.user);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(chall, user);
-    }
 
 }

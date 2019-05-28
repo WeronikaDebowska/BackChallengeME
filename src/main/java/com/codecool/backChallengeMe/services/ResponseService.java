@@ -16,15 +16,13 @@ import java.util.stream.Collectors;
 public class ResponseService {
 
     private UserRepository userRepository;
-    private ChallengeRepository challengeRepository;
     private ExecutionRepository executionRepository;
     private StatsService statsService;
 
 
     @Autowired
-    public ResponseService(UserRepository userRepository, ChallengeRepository challengeRepository, ExecutionRepository executionRepository, StatsService statsService) {
+    public ResponseService(UserRepository userRepository, ExecutionRepository executionRepository, StatsService statsService) {
         this.userRepository = userRepository;
-        this.challengeRepository = challengeRepository;
         this.executionRepository = executionRepository;
         this.statsService = statsService;
     }
@@ -89,7 +87,7 @@ public class ResponseService {
         ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
         challengeDetails.setExercises(getExerciseList(challenge));
 
-        return new ChallengeDetails(challenge);
+        return challengeDetails;
     }
 
     private List<Exercise> getExerciseList(Challenge challenge) {
@@ -110,10 +108,6 @@ public class ResponseService {
 
 
     //utils
-
-    public Optional<Challenge> getChallengeById(Long challId) {
-        return challengeRepository.findById(challId);
-    }
 
     public Optional<User> getUserById(Long userId) {
         return userRepository.findById(userId);

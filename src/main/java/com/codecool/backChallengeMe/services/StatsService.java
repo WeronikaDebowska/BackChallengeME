@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,51 +29,50 @@ public class StatsService {
         this.challengeExerciseRepository = challengeExerciseRepository;
     }
 
-    public double countParticipantChallengeAccomplishmentPercentage(ChallengeUser challengeUser) {
+    double countChallAccomplishmentPercent(ChallengeUser challengeUser) {
 
-        double challengeAccomplishmentPercentage = 0;
+        double challAccomplishmentPercent = 0;
 
         Challenge chal = challengeUser.getChall();
         User user = challengeUser.getUser();
 
         List<Exercise> exerciseList = getExerciseList(challengeUser);
         if (exerciseList.isEmpty()) {
-            return challengeAccomplishmentPercentage;
+            return challAccomplishmentPercent;
         }
-        challengeAccomplishmentPercentage = getChallengeAccomplishmentPercentage(challengeAccomplishmentPercentage, chal, user, exerciseList);
+        challAccomplishmentPercent = getChallAccomplishmentPercent(challAccomplishmentPercent, chal, user, exerciseList);
 
-        return challengeAccomplishmentPercentage / exerciseList.size();
+        return challAccomplishmentPercent / exerciseList.size();
 
     }
 
-    private double getChallengeAccomplishmentPercentage(double challengeAccomplishmentPercentage, Challenge chal, User user, List<Exercise> exerciseList) {
+    private double getChallAccomplishmentPercent(double challengeAccomplishmentPercentage, Challenge chal, User user, List<Exercise> exerciseList) {
         for (Exercise exercise : exerciseList) {
-            Optional<ChallengeExercise> challengeExercise = Optional.ofNullable(challengeExerciseRepository.findByChallAndExer(chal, exercise));
+            Optional<ChallengeExercise> challengeExercise = challengeExerciseRepository.findByChallAndExer(chal, exercise);
             if (challengeExercise.isPresent()) {
 
-                double exerciseAccomplishmentPercentage = getExerciseAccomplishmentPercentage(chal, user, exercise, challengeExercise.get());
+                double exerciseAccomplishmentPercentage = getExerAccomplishmentPercent(chal, user, exercise);
                 challengeAccomplishmentPercentage += exerciseAccomplishmentPercentage;
             }
         }
         return challengeAccomplishmentPercentage;
     }
 
-    private double getExerciseAccomplishmentPercentage(Challenge chal, User user, Exercise exercise, ChallengeExercise chalExer) {
-        double goal = getExerciseGoal(chalExer);
-        Optional<List<Execution>> executions = Optional.ofNullable(executionRepository.findExecutionsByChallengeAndUserAndExercise(chal, user, exercise));
+    private double getExerAccomplishmentPercent(Challenge chall, User user, Exercise exercise) {
+        Optional<ChallengeExercise> challExer = challengeExerciseRepository.findByChallAndExer(chall, exercise);
 
-        double exerciseAccomplishmentPercentage = 0;
-        if (executions.isPresent()) {
-            for (Execution execution : executions.get()) {
-                int executionsMade = execution.getRepeats();
-                exerciseAccomplishmentPercentage += executionsMade / goal * 100;
-            }
-        }
-        return exerciseAccomplishmentPercentage;
-    }
+        AtomicReference<Double> percent = new AtomicReference<>(0.00);
 
-    private double getExerciseGoal(ChallengeExercise challengeExercise) {
-        return (double) challengeExercise.getGoal();
+        challExer.ifPresent(
+                challengeExercise -> {
+                    double goal = challExer.get().getGoal();
+                    List<Execution> executions = (executionRepository.findExecutionsByChallengeAndUserAndExercise(chall, user, exercise));
+                    percent.set(executions.stream().map(Execution::getRepeats).reduce(0, (x, y) -> x + y) / goal * 100);
+                });
+        return percent.get();
+
+
+
     }
 
     private List<Exercise> getExerciseList(ChallengeUser challengeUser) {

@@ -22,7 +22,6 @@ public class ChallengeDetails extends ChallengeBasicInfo implements Serializable
 
 
     private List<String> tagList;
-
     List<Exercise> exercises = new LinkedList<>();
     private List<Participant> participants = new LinkedList<>();
 

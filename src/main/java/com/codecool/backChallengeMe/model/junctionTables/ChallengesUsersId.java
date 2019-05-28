@@ -1,10 +1,13 @@
 package com.codecool.backChallengeMe.model.junctionTables;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Data
 @Embeddable
 public class ChallengesUsersId implements Serializable {
 
@@ -20,23 +23,6 @@ public class ChallengesUsersId implements Serializable {
     public ChallengesUsersId(Long challId, Long userId) {
         this.challId = challId;
         this.userId = userId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass())
-            return false;
-
-        ChallengesUsersId that = (ChallengesUsersId) o;
-        return Objects.equals(challId, that.challId) &&
-                Objects.equals(userId, that.userId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(challId, userId);
     }
 
 
