@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,50 +28,33 @@ public class StatsService {
         this.challengeExerciseRepository = challengeExerciseRepository;
     }
 
-    double countChallAccomplishmentPercent(ChallengeUser challengeUser) {
-
-        double challAccomplishmentPercent = 0;
-
-        Challenge chal = challengeUser.getChall();
-        User user = challengeUser.getUser();
-
+    double getChallRealization(ChallengeUser challengeUser) {
         List<Exercise> exerciseList = getExerciseList(challengeUser);
-        if (exerciseList.isEmpty()) {
-            return challAccomplishmentPercent;
-        }
-        challAccomplishmentPercent = getChallAccomplishmentPercent(challAccomplishmentPercent, chal, user, exerciseList);
-
-        return challAccomplishmentPercent / exerciseList.size();
-
+        return exerciseList.isEmpty() ? 0.00 : countChallRealization(challengeUser, exerciseList) / exerciseList.size();
     }
 
-    private double getChallAccomplishmentPercent(double challengeAccomplishmentPercentage, Challenge chal, User user, List<Exercise> exerciseList) {
-        for (Exercise exercise : exerciseList) {
-            Optional<ChallengeExercise> challengeExercise = challengeExerciseRepository.findByChallAndExer(chal, exercise);
-            if (challengeExercise.isPresent()) {
-
-                double exerciseAccomplishmentPercentage = getExerAccomplishmentPercent(chal, user, exercise);
-                challengeAccomplishmentPercentage += exerciseAccomplishmentPercentage;
-            }
-        }
-        return challengeAccomplishmentPercentage;
+    private double countChallRealization(ChallengeUser challUser, List<Exercise> exerciseList) {
+        return exerciseList.stream()
+                .map(exer -> challengeExerciseRepository.findByChallAndExer(challUser.getChall(), exer))
+                .map(Optional::get)
+                .map(ChallengeExercise::getExer)
+                .map(exercise -> gettExerRealization(challUser, exercise))
+                .reduce(0.00, (x, y) -> x + y);
     }
 
-    private double getExerAccomplishmentPercent(Challenge chall, User user, Exercise exercise) {
-        Optional<ChallengeExercise> challExer = challengeExerciseRepository.findByChallAndExer(chall, exercise);
+    private double gettExerRealization(ChallengeUser challUser, Exercise exercise) {
+        Optional<ChallengeExercise> challExer = challengeExerciseRepository.findByChallAndExer(challUser.getChall(), exercise);
+        return challExer.map(challengeExercise -> countExerRealization(challUser, challExer.get())).orElse(0.00);
+    }
 
-        AtomicReference<Double> percent = new AtomicReference<>(0.00);
-
-        challExer.ifPresent(
-                challengeExercise -> {
-                    double goal = challExer.get().getGoal();
-                    List<Execution> executions = (executionRepository.findExecutionsByChallengeAndUserAndExercise(chall, user, exercise));
-                    percent.set(executions.stream().map(Execution::getRepeats).reduce(0, (x, y) -> x + y) / goal * 100);
-                });
-        return percent.get();
-
-
-
+    private double countExerRealization(ChallengeUser challUser, ChallengeExercise challExer) {
+        Challenge challenge = challUser.getChall();
+        User user = challUser.getUser();
+        List<Execution> executions = (executionRepository.findExecutionsByChallengeAndUserAndExercise(challenge, user, challExer.getExer()));
+        return executions.stream()
+                .map(Execution::getRepeats)
+                .reduce(0, (x, y) -> x + y)
+                .doubleValue() / challExer.getGoal() * 100;
     }
 
     private List<Exercise> getExerciseList(ChallengeUser challengeUser) {

@@ -11,7 +11,9 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity(name = "Challenges_users")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = "user")
 public class ChallengeUser implements Serializable {
 
     @EmbeddedId

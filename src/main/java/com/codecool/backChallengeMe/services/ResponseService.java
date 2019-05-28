@@ -46,7 +46,7 @@ public class ResponseService {
 
         for (ChallengeUser challengeUser : user.getChallengesUsersSet()) {
             ChallengeUserDetails challengeUserDetails = new ChallengeUserDetails(challengeUser);
-            double percentage = statsService.countChallAccomplishmentPercent(challengeUser);
+            double percentage = statsService.getChallRealization(challengeUser);
             challengeUserDetails.setAccomplishmentPercentage(percentage);
             challengeUserDetailsList.add(challengeUserDetails);
         }
