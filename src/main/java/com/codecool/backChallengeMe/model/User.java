@@ -1,6 +1,7 @@
 package com.codecool.backChallengeMe.model;
 
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -23,19 +24,26 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String password;
-    public String roles;
-    private String username;
 
-
+    @JsonIgnore
+    public String roles;        //admin or user
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     Set<ChallengeUser> challengesUsersSet;
 
+    private String username;
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @JsonIgnore
     List<Execution> executionList;
+    @JsonIgnore
+    private String password;
+    @Transient
+    private double challengeRealization;
+    @Transient
+    private String challengeRole;        //host or participant
 
 }
