@@ -58,7 +58,7 @@ public class ResponseService {
 
     public ChallengeDetails createChallengeBasicResponse(Challenge challenge) {
         ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
-        challengeDetails.setParticipants(createParticipantList(challenge));
+//        challengeDetails.setParticipants(createParticipantList(challenge));
         challengeDetails.setExercises(getExerciseList(challenge));
         return challengeDetails;
     }
@@ -66,31 +66,19 @@ public class ResponseService {
 
     //methods to create response to "challenges/{chall_id}/paticipants" url
 
-    public ChallengeDetails createChallengeParticipantsResponse(Challenge challenge) {
-
-        ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
-        challengeDetails.setParticipants(createParticipantList(challenge));
-        return challengeDetails;
-    }
-
-    private List<Participant> createParticipantList(Challenge challenge) {
+    public List<User> createChallengeParticipantsResponse(Challenge challenge) {
         return challenge.getChallengesUsers().stream()
-                .map(Participant::new)
+                .peek(challengeUser -> challengeUser.getUser().setChallengeRealization(statsService.getChallRealization(challengeUser)))
+                .peek(challengeUser -> challengeUser.getUser().setChallengeRole(challengeUser.getUserRole()))
+                .map(ChallengeUser::getUser)
                 .collect(Collectors.toList());
     }
 
 
     //methods to create response to "challenges/{chall_id}/exercises" url
 
-    public ChallengeDetails createChallengeExerciseListResponse(Challenge challenge) {
 
-        ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
-        challengeDetails.setExercises(getExerciseList(challenge));
-
-        return challengeDetails;
-    }
-
-    private List<Exercise> getExerciseList(Challenge challenge) {
+    public List<Exercise> getExerciseList(Challenge challenge) {
         return challenge.getChallengesExercisesSet().stream()
                 .map(ChallengeExercise::getExer)
                 .collect(Collectors.toList());

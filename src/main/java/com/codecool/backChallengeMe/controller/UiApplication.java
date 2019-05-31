@@ -98,23 +98,23 @@ public class UiApplication {
 
 
     @GetMapping("challenges/{chall_id}/participants")
-    public ResponseEntity<ChallengeDetails> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
+    public ResponseEntity<List<User>> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
 
         Optional<Challenge> challenge = challengeRepository.findById(challId);
         if (challenge.isPresent()) {
-            ChallengeDetails challengeDetails = responseService.createChallengeParticipantsResponse(challenge.get());
-            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
+//            ChallengeDetails challengeDetails = responseService.createChallengeParticipantsResponse(challenge.get());
+            return new ResponseEntity<>(responseService.createChallengeParticipantsResponse(challenge.get()), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
     @GetMapping("challenges/{chall_id}/exercises")
-    public ResponseEntity<ChallengeDetails> getChallengeExercises(@PathVariable("chall_id") Long challId) {
+    public ResponseEntity<List<Exercise>> getChallengeExercises(@PathVariable("chall_id") Long challId) {
         Optional<Challenge> challenge = challengeRepository.findById(challId);
         if (challenge.isPresent()) {
-            ChallengeDetails challengeDetails = responseService.createChallengeExerciseListResponse(challenge.get());
-            return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
+            List<Exercise> exercises = responseService.getExerciseList(challenge.get());
+            return new ResponseEntity<>(exercises, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
