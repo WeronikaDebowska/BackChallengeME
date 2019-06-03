@@ -44,9 +44,10 @@ public class ResponseService {
 
         List<ChallengeUserDetails> challengeUserDetailsList = new LinkedList<>();
 
-        for (ChallengeUser challengeUser : user.getChallengesUsersSet()) {
+        for (ChallengeUser challengeUser : user.getChallengesUsersSet().stream().collect(Collectors.toList())) {
             ChallengeUserDetails challengeUserDetails = new ChallengeUserDetails(challengeUser);
-            double percentage = statsService.getChallRealization(challengeUser);
+            Challenge challenge = challengeUser.getChall();
+            double percentage = statsService.getChallRealization(challenge, user);
             challengeUserDetails.setAccomplishmentPercentage(percentage);
             challengeUserDetailsList.add(challengeUserDetails);
         }
@@ -68,7 +69,7 @@ public class ResponseService {
 
     public List<User> createChallengeParticipantsResponse(Challenge challenge) {
         return challenge.getChallengesUsers().stream()
-                .peek(challengeUser -> challengeUser.getUser().setChallengeRealization(statsService.getChallRealization(challengeUser)))
+                .peek(challengeUser -> challengeUser.getUser().setChallengeRealization(statsService.getChallRealization(challenge, challengeUser.getUser())))
                 .peek(challengeUser -> challengeUser.getUser().setChallengeRole(challengeUser.getUserRole()))
                 .map(ChallengeUser::getUser)
                 .collect(Collectors.toList());
@@ -89,6 +90,7 @@ public class ResponseService {
 
     public List<ExecutionDetails> getExecutionDetails(Challenge challenge, User user) {
         List<Execution> executionList = executionRepository.findExecutionsByChallengeAndUser(challenge, user);
+
         return executionList.stream()
                 .map(ExecutionDetails::new)
                 .collect(Collectors.toList());

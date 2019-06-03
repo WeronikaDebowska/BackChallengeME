@@ -1,6 +1,7 @@
 package com.codecool.backChallengeMe.model;
 
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -27,8 +28,9 @@ public class User {
 
     @JsonIgnore
     public String roles;        //admin or user
+
     @OneToMany(mappedBy = "user")
-    @JsonIgnore
+    @JsonBackReference
     Set<ChallengeUser> challengesUsersSet;
 
     private String username;

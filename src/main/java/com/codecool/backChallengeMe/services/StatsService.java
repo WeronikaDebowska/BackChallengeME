@@ -31,7 +31,33 @@ public class StatsService {
     double getChallRealization(ChallengeUser challengeUser) {
         List<Exercise> exerciseList = getExerciseList(challengeUser);
         return exerciseList.isEmpty() ? 0.00 : countChallRealization(challengeUser, exerciseList) / exerciseList.size();
+
     }
+
+    double getChallRealization(Challenge challenge, User user) {
+        List<Exercise> exercisesList = challenge.getChallengesExercisesSet().stream().map(ChallengeExercise::getExer).collect(Collectors.toList());
+
+        double sum = 0.00;
+
+        if (exercisesList.isEmpty()) {
+            return sum;
+        }
+
+        Integer result;
+        int goal;
+
+        for (Exercise exer : exercisesList) {
+            Long exerId = exer.getExerciseId();
+            result = executionRepository.findExecutionsByChallengeAndUserAndExercise1(challenge.getId(), user.getId(), exerId);
+            goal = challengeExerciseRepository.findByChallAndExer(challenge, exer).get().getGoal();
+            if (result == null) {
+                result = 0;
+            }
+            sum += result / (double) goal;
+        }
+        return sum * 100 / exercisesList.size();
+    }
+
 
     private double countChallRealization(ChallengeUser challUser, List<Exercise> exerciseList) {
         return exerciseList.stream()
@@ -48,6 +74,10 @@ public class StatsService {
     }
 
     private double countExerRealization(ChallengeUser challUser, ChallengeExercise challExer) {
+
+        Integer result = executionRepository.findExecutionsByChallengeAndUserAndExercise1(challUser.getChall().getId(), challUser.getUser().getId(), challExer.getExer().getExerciseId());
+        System.out.println(result);
+
         Challenge challenge = challUser.getChall();
         User user = challUser.getUser();
         List<Execution> executions = (executionRepository.findExecutionsByChallengeAndUserAndExercise(challenge, user, challExer.getExer()));

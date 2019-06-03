@@ -18,6 +18,13 @@ public interface ExecutionRepository extends JpaRepository<Execution, Long> {
 
     List<Execution> findExecutionsByChallengeAndUserAndExercise(Challenge challenge, User user, Exercise exercise);
 
+
+    @Query(
+            value = "Select sum(repeats) from executions where (chall_id = ?1 and user_id = ?2 and exer_id = ?3) group by exer_id, chall_id, user_id",
+            nativeQuery = true
+    )
+    Integer findExecutionsByChallengeAndUserAndExercise1(Long chall_id, Long user_id, Long exer_id);
+
 //    @Query(value = "Select * from executions e where e.chall_id = :challId and e.user_id = :userId",
 //        nativeQuery = true)
 //    List<Execution> findAllExecutionsByChallengeAndUser(@Param("challId") Long challId, @Param("userId") Long userId);

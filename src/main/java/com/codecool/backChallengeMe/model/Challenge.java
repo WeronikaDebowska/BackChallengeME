@@ -3,6 +3,8 @@ package com.codecool.backChallengeMe.model;
 
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -34,6 +36,7 @@ public class Challenge implements Serializable {
 
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<ChallengeUser> challengesUsers = new LinkedList<>();
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)

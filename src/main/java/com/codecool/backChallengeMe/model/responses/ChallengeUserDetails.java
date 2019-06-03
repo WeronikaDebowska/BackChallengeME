@@ -1,6 +1,8 @@
 package com.codecool.backChallengeMe.model.responses;
 
+import com.codecool.backChallengeMe.model.Challenge;
 import com.codecool.backChallengeMe.model.Tag;
+import com.codecool.backChallengeMe.model.User;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import lombok.*;
 
@@ -29,4 +31,5 @@ public class ChallengeUserDetails extends ChallengeBasicInfo implements Serializ
         this.challengeStatus = challengeUser.getChallengeStatus();
 
     }
+
 }

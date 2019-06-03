@@ -19,11 +19,13 @@ public class ChallengeUser implements Serializable {
     @EmbeddedId
     private ChallengesUsersId id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne
+//            (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("challId")
     private Challenge chall;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne
+//            (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("userId")
     private User user;
 

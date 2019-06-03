@@ -102,7 +102,6 @@ public class UiApplication {
 
         Optional<Challenge> challenge = challengeRepository.findById(challId);
         if (challenge.isPresent()) {
-//            ChallengeDetails challengeDetails = responseService.createChallengeParticipantsResponse(challenge.get());
             return new ResponseEntity<>(responseService.createChallengeParticipantsResponse(challenge.get()), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
