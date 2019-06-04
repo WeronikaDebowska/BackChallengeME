@@ -4,6 +4,7 @@ package com.codecool.backChallengeMe.controller;
 import com.codecool.backChallengeMe.DAO.ChallengeRepository;
 import com.codecool.backChallengeMe.DAO.UserRepository;
 import com.codecool.backChallengeMe.model.*;
+import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
 import com.codecool.backChallengeMe.model.responses.*;
 import com.codecool.backChallengeMe.services.ResponseService;
 import lombok.extern.slf4j.Slf4j;
@@ -69,10 +70,6 @@ public class UiApplication {
         Optional<User> optUser = userRepository.findById(userId);
 
 
-//        return optUser.map(user -> new ResponseEntity<>(responseService.getAllChallengeUserDetailsResponse(user), HttpStatus.OK))
-//                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
-
         if (optUser.isPresent()) {
             List<ChallengeUserDetails> allChallengesDetails = responseService.getAllChallengeUserDetailsResponse(optUser.get());
             return new ResponseEntity<>(allChallengesDetails, HttpStatus.OK);
@@ -85,9 +82,6 @@ public class UiApplication {
     public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long challId) {
         Optional<Challenge> optChallenge = challengeRepository.findById(challId);
 
-//        return optChallenge.map(challenge -> new ResponseEntity<>(responseService.createChallengeBasicResponse(challenge), HttpStatus.OK))
-//                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
         if (optChallenge.isPresent()) {
             ChallengeDetails challengeDetails = responseService.createChallengeBasicResponse(optChallenge.get());
             return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
@@ -98,7 +92,7 @@ public class UiApplication {
 
 
     @GetMapping("challenges/{chall_id}/participants")
-    public ResponseEntity<List<User>> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
+    public ResponseEntity<List<ChallengeUser>> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
 
         Optional<Challenge> challenge = challengeRepository.findById(challId);
         if (challenge.isPresent()) {

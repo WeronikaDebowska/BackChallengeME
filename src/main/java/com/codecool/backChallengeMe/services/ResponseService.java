@@ -65,13 +65,12 @@ public class ResponseService {
     }
 
 
-    //methods to create response to "challenges/{chall_id}/paticipants" url
+    //methods to create response to "challenges/{chall_id}/participants" url
 
-    public List<User> createChallengeParticipantsResponse(Challenge challenge) {
+    public List<ChallengeUser> createChallengeParticipantsResponse(Challenge challenge) {
+
         return challenge.getChallengesUsers().stream()
-                .peek(challengeUser -> challengeUser.getUser().setChallengeRealization(statsService.getChallRealization(challenge, challengeUser.getUser())))
-                .peek(challengeUser -> challengeUser.getUser().setChallengeRole(challengeUser.getUserRole()))
-                .map(ChallengeUser::getUser)
+                .peek(ChallengeUser::setProperties)
                 .collect(Collectors.toList());
     }
 

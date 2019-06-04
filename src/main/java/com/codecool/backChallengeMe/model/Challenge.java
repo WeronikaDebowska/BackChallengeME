@@ -32,6 +32,7 @@ public class Challenge implements Serializable {
     private Timestamp finish;
 
     @ManyToMany(mappedBy = "challenges", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Tag> challengeTagList = new LinkedList<>();
 
 
@@ -40,6 +41,7 @@ public class Challenge implements Serializable {
     private List<ChallengeUser> challengesUsers = new LinkedList<>();
 
     @OneToMany(mappedBy = "chall", cascade = CascadeType.ALL)
+    @JsonBackReference
     private Set<ChallengeExercise> challengesExercisesSet = new HashSet<>();
 
     @OneToMany(
