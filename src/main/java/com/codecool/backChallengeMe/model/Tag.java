@@ -1,5 +1,6 @@
 package com.codecool.backChallengeMe.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,12 +19,13 @@ public class Tag {
     private Long id;
 
     @Column(name = "tag_name")
-    private String tagName;
+    private String name;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "challenges_tags",
             joinColumns = @JoinColumn(name = "tag_id"),
             inverseJoinColumns = @JoinColumn(name = "chall_id"))
+    @JsonBackReference
     private List<Challenge> challenges = new LinkedList<>();
 }

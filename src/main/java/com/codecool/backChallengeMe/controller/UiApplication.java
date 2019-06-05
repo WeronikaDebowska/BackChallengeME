@@ -4,7 +4,7 @@ package com.codecool.backChallengeMe.controller;
 import com.codecool.backChallengeMe.DAO.ChallengeRepository;
 import com.codecool.backChallengeMe.DAO.UserRepository;
 import com.codecool.backChallengeMe.model.*;
-import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
+import com.codecool.backChallengeMe.model.junctionTables.Participation;
 import com.codecool.backChallengeMe.model.responses.*;
 import com.codecool.backChallengeMe.services.ResponseService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.security.Timestamp;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,12 +65,12 @@ public class UiApplication {
     }
 
     @GetMapping("/users/{user_id}/challenges")
-    public ResponseEntity<List<ChallengeUserDetails>> getUserChallenges(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<List<ParticipationDetails>> getUserChallenges(@PathVariable("user_id") Long userId) {
         Optional<User> optUser = userRepository.findById(userId);
 
 
         if (optUser.isPresent()) {
-            List<ChallengeUserDetails> allChallengesDetails = responseService.getAllChallengeUserDetailsResponse(optUser.get());
+            List<ParticipationDetails> allChallengesDetails = responseService.getAllChallengeUserDetailsResponse(optUser.get());
             return new ResponseEntity<>(allChallengesDetails, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -79,11 +78,11 @@ public class UiApplication {
     }
 
     @GetMapping("/challenges/{chall_id}")
-    public ResponseEntity<ChallengeDetails> getChallengeDetails(@PathVariable("chall_id") Long challId) {
+    public ResponseEntity<Challenge> getChallengeDetails(@PathVariable("chall_id") Long challId) {
         Optional<Challenge> optChallenge = challengeRepository.findById(challId);
 
         if (optChallenge.isPresent()) {
-            ChallengeDetails challengeDetails = responseService.createChallengeBasicResponse(optChallenge.get());
+            Challenge challengeDetails = responseService.createChallengeBasicResponse(optChallenge.get());
             return new ResponseEntity<>(challengeDetails, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -92,11 +91,11 @@ public class UiApplication {
 
 
     @GetMapping("challenges/{chall_id}/participants")
-    public ResponseEntity<List<ChallengeUser>> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
+    public ResponseEntity<List<Participation>> getChallengeParticipants(@PathVariable("chall_id") Long challId) {
 
         Optional<Challenge> challenge = challengeRepository.findById(challId);
         if (challenge.isPresent()) {
-            return new ResponseEntity<>(responseService.createChallengeParticipantsResponse(challenge.get()), HttpStatus.OK);
+            return new ResponseEntity<>(responseService.createParticipantsResponse(challenge.get()), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -115,11 +114,11 @@ public class UiApplication {
 
 
     @GetMapping("users/{user_id}/challenges/{chall_id}/executions")
-    public ResponseEntity<List<ExecutionDetails>> getExecutions(@PathVariable("user_id") Long userId, @PathVariable("chall_id") Long challId) {
+    public ResponseEntity<List<Execution>> getExecutions(@PathVariable("user_id") Long userId, @PathVariable("chall_id") Long challId) {
         Optional<Challenge> challenge = challengeRepository.findById(challId);
         Optional<User> user = responseService.getUserById(userId);
         if (challenge.isPresent() && user.isPresent()) {
-            List<ExecutionDetails> executionDetailsList = responseService.getExecutionDetails(challenge.get(), user.get());
+            List<Execution> executionDetailsList = responseService.getExecutionDetails(challenge.get(), user.get());
             return new ResponseEntity<>(executionDetailsList, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

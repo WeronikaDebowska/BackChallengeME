@@ -3,46 +3,46 @@ package com.codecool.backChallengeMe.model.junctionTables;
 import com.codecool.backChallengeMe.model.Challenge;
 import com.codecool.backChallengeMe.model.User;
 //import com.codecool.backChallengeMe.model.enums.ChallengeRole;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 //import lombok.Getter;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity(name = "Challenges_users")
 @Setter
 @Getter
-@EqualsAndHashCode(exclude = "user")
+@EqualsAndHashCode
 @JsonIgnoreProperties({"chall", "user"})
-public class ChallengeUser implements Serializable {
+public class Participation {
 
     @EmbeddedId
     @JsonIgnore
-    private ChallengesUsersId id;
+    private ParticipationId id;
 
     @ManyToOne
             (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("challId")
-    @JsonBackReference
+    @JsonManagedReference
     private Challenge chall;
 
     @ManyToOne
             (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId("userId")
-    @JsonBackReference
+    @JsonIgnore
     private User user;
+
     @Enumerated(EnumType.STRING)
     private ChallengeRole userRole;
     private Double progress;
 
     @Column(name = "challenge_status")
-    private String challengeStatus;
+    private String status;
+
     @Transient
     private String username;
+
     @Transient
     private Long userId;
 
@@ -51,13 +51,14 @@ public class ChallengeUser implements Serializable {
         this.userId = user.getId();
     }
 
-    public ChallengeUser() {
+    public Participation() {
     }
 
-    public ChallengeUser(Challenge challenge, User user) {
+    public Participation(Challenge challenge, User user) {
         this.chall = challenge;
         this.user = user;
-        this.id = new ChallengesUsersId(challenge.getId(), user.getId());
+        this.id = new ParticipationId(challenge.getId(), user.getId());
+        setProperties();
     }
 
     public enum ChallengeRole {

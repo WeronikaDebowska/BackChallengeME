@@ -1,12 +1,10 @@
 package com.codecool.backChallengeMe.model;
 
-import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser.ChallengeRole;
-import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
+import com.codecool.backChallengeMe.model.junctionTables.Participation;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import org.hibernate.annotations.Type;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -18,7 +16,7 @@ import java.util.Set;
 @Component
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"participationSet", "executionList"})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
@@ -32,9 +30,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @JsonBackReference
-    Set<ChallengeUser> challengesUsersSet;
+    Set<Participation> participationSet;
 
     private String username;
+
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,
@@ -42,20 +41,7 @@ public class User {
     )
     @JsonIgnore
     List<Execution> executionList;
+
     @JsonIgnore
     private String password;
-
-
-    @Transient
-    private double challengeRealization;
-
-    @Transient
-    @Column(name = "user_role")
-    @Enumerated(EnumType.STRING)
-    private ChallengeRole userRole;        //host or participant
-
-    @Transient
-    private String challengeStatus;        //rejected/accepted/pending
-
-
 }

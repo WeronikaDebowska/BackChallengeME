@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Data
 @Embeddable
-public class ChallengesUsersId implements Serializable {
+public class ParticipationId implements Serializable {
 
     @Column(name = "chall_id")
     private Long challId;
@@ -17,10 +17,10 @@ public class ChallengesUsersId implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    public ChallengesUsersId() {
+    public ParticipationId() {
     }
 
-    public ChallengesUsersId(Long challId, Long userId) {
+    public ParticipationId(Long challId, Long userId) {
         this.challId = challId;
         this.userId = userId;
     }

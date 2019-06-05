@@ -3,7 +3,7 @@ package com.codecool.backChallengeMe.services;
 import com.codecool.backChallengeMe.DAO.*;
 import com.codecool.backChallengeMe.model.*;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
-import com.codecool.backChallengeMe.model.junctionTables.ChallengeUser;
+import com.codecool.backChallengeMe.model.junctionTables.Participation;
 import com.codecool.backChallengeMe.model.responses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,14 +17,14 @@ public class ResponseService {
 
     private UserRepository userRepository;
     private ExecutionRepository executionRepository;
-    private StatsService statsService;
+//    private StatsService statsService;
 
 
     @Autowired
-    public ResponseService(UserRepository userRepository, ExecutionRepository executionRepository, StatsService statsService) {
+    public ResponseService(UserRepository userRepository, ExecutionRepository executionRepository) {
         this.userRepository = userRepository;
         this.executionRepository = executionRepository;
-        this.statsService = statsService;
+//        this.statsService = statsService;
     }
 
 
@@ -40,37 +40,29 @@ public class ResponseService {
     //methods to create response to "/users/{user_id}/challenges" url
 
 
-    public List<ChallengeUserDetails> getAllChallengeUserDetailsResponse(User user) {
+    public List<ParticipationDetails> getAllChallengeUserDetailsResponse(User user) {
 
-        List<ChallengeUserDetails> challengeUserDetailsList = new LinkedList<>();
-
-        for (ChallengeUser challengeUser : user.getChallengesUsersSet().stream().collect(Collectors.toList())) {
-            ChallengeUserDetails challengeUserDetails = new ChallengeUserDetails(challengeUser);
-            Challenge challenge = challengeUser.getChall();
-            double percentage = statsService.getChallRealization(challenge, user);
-            challengeUserDetails.setAccomplishmentPercentage(percentage);
-            challengeUserDetailsList.add(challengeUserDetails);
-        }
-
-        return challengeUserDetailsList;
+        return user.getParticipationSet().stream()
+                .peek(Participation::setProperties)
+                .map(ParticipationDetails::new)
+                .collect(Collectors.toList());
     }
 
     //methods to create response to "challenges/{chall_id}" url
 
-    public ChallengeDetails createChallengeBasicResponse(Challenge challenge) {
-        ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
-//        challengeDetails.setParticipants(createParticipantList(challenge));
-        challengeDetails.setExercises(getExerciseList(challenge));
-        return challengeDetails;
+    public Challenge createChallengeBasicResponse(Challenge challenge) {
+//        ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
+//        challengeDetails.setExercises(getExerciseList(challenge));
+        return challenge;
     }
 
 
     //methods to create response to "challenges/{chall_id}/participants" url
 
-    public List<ChallengeUser> createChallengeParticipantsResponse(Challenge challenge) {
+    public List<Participation> createParticipantsResponse(Challenge challenge) {
 
-        return challenge.getChallengesUsers().stream()
-                .peek(ChallengeUser::setProperties)
+        return challenge.getParticipationList().stream()
+                .peek(Participation::setProperties)
                 .collect(Collectors.toList());
     }
 
@@ -79,7 +71,7 @@ public class ResponseService {
 
 
     public List<Exercise> getExerciseList(Challenge challenge) {
-        return challenge.getChallengesExercisesSet().stream()
+        return challenge.getExercisesSet().stream()
                 .map(ChallengeExercise::getExer)
                 .collect(Collectors.toList());
     }
@@ -87,11 +79,9 @@ public class ResponseService {
     //methods to create response to "challenges/{chall_id}/executions" url
 
 
-    public List<ExecutionDetails> getExecutionDetails(Challenge challenge, User user) {
-        List<Execution> executionList = executionRepository.findExecutionsByChallengeAndUser(challenge, user);
-
-        return executionList.stream()
-                .map(ExecutionDetails::new)
+    public List<Execution> getExecutionDetails(Challenge challenge, User user) {
+        return executionRepository.findExecutionsByChallengeAndUser(challenge, user).stream()
+                .peek(Execution::setAdditionalData)
                 .collect(Collectors.toList());
     }
 
