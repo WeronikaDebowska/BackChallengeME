@@ -8,6 +8,9 @@ import com.codecool.backChallengeMe.model.junctionTables.Participation;
 import com.codecool.backChallengeMe.model.responses.*;
 import com.codecool.backChallengeMe.services.ResponseService;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -126,7 +129,8 @@ public class UiApplication {
 
     @PostMapping("/challenges")
     public ResponseEntity addChallenge(@RequestBody String challengeName, Timestamp start, Timestamp finish, Long hostUserId) {
-        //TODO add new challenge to DB
+
+
         return new ResponseEntity(HttpStatus.OK);
     }
 
