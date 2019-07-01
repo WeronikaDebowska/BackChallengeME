@@ -1,14 +1,8 @@
 package com.codecool.backChallengeMe.controller;
 
 
-import com.codecool.backChallengeMe.DAO.ChallengeRepository;
-import com.codecool.backChallengeMe.DAO.ExecutionRepository;
-import com.codecool.backChallengeMe.DAO.ParticipationRepository;
-import com.codecool.backChallengeMe.DAO.UserRepository;
-import com.codecool.backChallengeMe.model.Challenge;
-import com.codecool.backChallengeMe.model.Execution;
-import com.codecool.backChallengeMe.model.Exercise;
-import com.codecool.backChallengeMe.model.User;
+import com.codecool.backChallengeMe.DAO.*;
+import com.codecool.backChallengeMe.model.*;
 import com.codecool.backChallengeMe.model.junctionTables.Participation;
 import com.codecool.backChallengeMe.model.responses.ParticipationDetails;
 import com.codecool.backChallengeMe.services.ResponseService;
@@ -28,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600,
@@ -43,18 +38,21 @@ public class UiApplication {
     private ChallengeRepository challengeRepository;
     private ParticipationRepository participationRepository;
     private ExecutionRepository executionRepository;
+    private TagRepository tagRepository;
 
     @Autowired
     public UiApplication(ResponseService responseService,
                          UserRepository userRepository,
                          ChallengeRepository challengeRepository,
                          ParticipationRepository participationRepository,
-                         ExecutionRepository executionRepository) {
+                         ExecutionRepository executionRepository,
+                         TagRepository tagRepository) {
         this.responseService = responseService;
         this.userRepository = userRepository;
         this.challengeRepository = challengeRepository;
         this.participationRepository = participationRepository;
         this.executionRepository = executionRepository;
+        this.tagRepository = tagRepository;
     }
 
 
@@ -141,6 +139,13 @@ public class UiApplication {
             return new ResponseEntity<>(executionDetailsMap, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("tags")
+    public ResponseEntity<List<Tag>> getTags() {
+        List<Tag> tags = tagRepository.findAll().stream()
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(tags, HttpStatus.OK);
     }
 
 
