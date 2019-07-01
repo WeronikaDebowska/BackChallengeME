@@ -1,12 +1,15 @@
 package com.codecool.backChallengeMe.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity(name = "Executions")
 @Getter
@@ -19,7 +22,10 @@ public class Execution {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Integer repeats = 0;
-    private Timestamp date;
+
+    @JsonFormat
+            (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date date;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,7 +33,8 @@ public class Execution {
     @JsonBackReference
     private Challenge challenge;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+            (fetch = FetchType.LAZY)
     @JoinColumn(name = "exer_id")
     @JsonIgnore
     private Exercise exercise;
@@ -49,6 +56,12 @@ public class Execution {
         this.exerName = exercise.getExerciseName();
     }
 
+    public Execution() {
+    }
 
-
+    public Execution(Integer repeats, Date date, Long exerId) {
+        this.repeats = repeats;
+        this.date = date;
+        this.exerId = exerId;
+    }
 }

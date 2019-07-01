@@ -1,10 +1,12 @@
 package com.codecool.backChallengeMe.services;
 
-import com.codecool.backChallengeMe.DAO.*;
+import com.codecool.backChallengeMe.DAO.ExecutionRepository;
+import com.codecool.backChallengeMe.DAO.ExerciseRepository;
+import com.codecool.backChallengeMe.DAO.UserRepository;
 import com.codecool.backChallengeMe.model.*;
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import com.codecool.backChallengeMe.model.junctionTables.Participation;
-import com.codecool.backChallengeMe.model.responses.*;
+import com.codecool.backChallengeMe.model.responses.ParticipationDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -12,19 +14,23 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingByConcurrent;
+
 @Service
 public class ResponseService {
 
     private UserRepository userRepository;
     private ExecutionRepository executionRepository;
-//    private StatsService statsService;
+    private ExerciseRepository exerciseRepository;
 
 
     @Autowired
-    public ResponseService(UserRepository userRepository, ExecutionRepository executionRepository) {
+    public ResponseService(UserRepository userRepository,
+                           ExecutionRepository executionRepository,
+                           ExerciseRepository exerciseRepository) {
         this.userRepository = userRepository;
         this.executionRepository = executionRepository;
-//        this.statsService = statsService;
+        this.exerciseRepository = exerciseRepository;
     }
 
 
@@ -34,7 +40,7 @@ public class ResponseService {
         String username = ((MyUserPrincipal) principal.getPrincipal()).getUsername();
         User user = userRepository.findByUsername(username);
         Long id = user.getId();
-        return "{\"id\": \"" + id + "\"}";
+        return "{\"userId\": \"" + id + "\"}";
     }
 
     //methods to create response to "/users/{user_id}/challenges" url
@@ -43,7 +49,6 @@ public class ResponseService {
     public List<ParticipationDetails> getAllChallengeUserDetailsResponse(User user) {
 
         return user.getParticipationSet().stream()
-                .peek(Participation::setProperties)
                 .map(ParticipationDetails::new)
                 .collect(Collectors.toList());
     }
@@ -51,18 +56,17 @@ public class ResponseService {
     //methods to create response to "challenges/{chall_id}" url
 
     public Challenge createChallengeBasicResponse(Challenge challenge) {
-//        ChallengeDetails challengeDetails = new ChallengeDetails(challenge);
-//        challengeDetails.setExercises(getExerciseList(challenge));
         return challenge;
     }
 
 
     //methods to create response to "challenges/{chall_id}/participants" url
 
-    public List<Participation> createParticipantsResponse(Challenge challenge) {
+    public List<ParticipationDetails> createParticipantsResponse(Challenge challenge) {
 
         return challenge.getParticipationList().stream()
-                .peek(Participation::setProperties)
+                .sorted(Comparator.comparing(Participation::getProgress).reversed())
+                .map(ParticipationDetails::new)
                 .collect(Collectors.toList());
     }
 
@@ -73,16 +77,51 @@ public class ResponseService {
     public List<Exercise> getExerciseList(Challenge challenge) {
         return challenge.getExercisesSet().stream()
                 .map(ChallengeExercise::getExer)
+                .sorted(Comparator.comparingLong(Exercise::getExerciseId))
                 .collect(Collectors.toList());
     }
 
     //methods to create response to "challenges/{chall_id}/executions" url
 
 
-    public List<Execution> getExecutionDetails(Challenge challenge, User user) {
-        return executionRepository.findExecutionsByChallengeAndUser(challenge, user).stream()
+    public Map<Date, List<Execution>> getExecutionDetails(Challenge challenge, User user) {
+
+        Map<Date, List<Execution>> executions = mapChallengesByDate(challenge, user);
+        List<Exercise> exercises = getExerciseList(challenge);
+        completeWithZerosIfNeeded(executions, exercises);
+        return executions;
+    }
+
+    private void completeWithZerosIfNeeded(Map<Date, List<Execution>> executions, List<Exercise> exercises) {
+        List<Execution> execList;
+
+        for (Date date : executions.keySet()) {
+            List<Execution> execListWithZeros = new LinkedList<>();
+            execList = executions.get(date);
+            for (Exercise exer : exercises) {
+                boolean found = false;
+                for (Execution exec : execList) {
+                    if (exec.getExerId().equals(exer.getExerciseId())) {
+                        execListWithZeros.add(exec);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    execListWithZeros.add(new Execution(0, date, exer.getExerciseId()));
+                }
+            }
+            executions.put(date, execListWithZeros);
+        }
+    }
+
+    private Map<Date, List<Execution>> mapChallengesByDate(Challenge challenge, User user) {
+        return executionRepository.findExecutionsByChallengeAndUserOrderByDateDesc(challenge, user)
+                .stream()
                 .peek(Execution::setAdditionalData)
-                .collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(Execution::getDate))
+                .collect(groupingByConcurrent(Execution::getDate));
     }
 
 

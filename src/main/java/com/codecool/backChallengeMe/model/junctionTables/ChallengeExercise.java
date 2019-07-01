@@ -2,7 +2,9 @@ package com.codecool.backChallengeMe.model.junctionTables;
 
 import com.codecool.backChallengeMe.model.Challenge;
 import com.codecool.backChallengeMe.model.Exercise;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,7 +22,8 @@ public class ChallengeExercise implements Serializable {
     @MapsId("challId")
     private Challenge chall;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+            (fetch = FetchType.LAZY)
     @MapsId("exerId")
     private Exercise exer;
 

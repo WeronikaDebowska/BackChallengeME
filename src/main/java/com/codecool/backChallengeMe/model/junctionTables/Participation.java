@@ -2,11 +2,12 @@ package com.codecool.backChallengeMe.model.junctionTables;
 
 import com.codecool.backChallengeMe.model.Challenge;
 import com.codecool.backChallengeMe.model.User;
-//import com.codecool.backChallengeMe.model.enums.ChallengeRole;
-import com.fasterxml.jackson.annotation.*;
-import lombok.*;
-
-//import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -35,35 +36,37 @@ public class Participation {
 
     @Enumerated(EnumType.STRING)
     private ChallengeRole userRole;
-    private Double progress;
 
     @Column(name = "challenge_status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private ChallengeStatus status;
 
-    @Transient
-    private String username;
+    private Double progress;
 
-    @Transient
-    private Long userId;
-
-    public void setProperties() {
-        this.username = user.getUsername();
-        this.userId = user.getId();
-    }
 
     public Participation() {
     }
 
-    public Participation(Challenge challenge, User user) {
+    public Participation(Challenge challenge, User user, ChallengeStatus status, ChallengeRole role) {
         this.chall = challenge;
         this.user = user;
         this.id = new ParticipationId(challenge.getId(), user.getId());
-        setProperties();
+        this.userRole = role;
+        this.status = status;
+        this.progress = 0.00;
+
     }
+
 
     public enum ChallengeRole {
         host,
         participant;
+    }
+
+    public enum ChallengeStatus {
+        accepted,
+        rejected,
+        pending;
     }
 
 }

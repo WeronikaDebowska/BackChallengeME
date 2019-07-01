@@ -3,15 +3,13 @@ package com.codecool.backChallengeMe.model;
 
 import com.codecool.backChallengeMe.model.junctionTables.ChallengeExercise;
 import com.codecool.backChallengeMe.model.junctionTables.Participation;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.*;
+import com.fasterxml.jackson.annotation.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.*;
 
 @Entity
@@ -23,13 +21,19 @@ import java.util.*;
 public class Challenge implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @Column(name = "id")
     private Long id;
 
     private String name;
-    private Timestamp start;
-    private Timestamp finish;
+
+    @JsonFormat
+            (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date start;
+
+    @JsonFormat
+            (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date finish;
 
     @ManyToMany(mappedBy = "challenges", fetch = FetchType.LAZY)
     @JsonManagedReference
@@ -54,12 +58,10 @@ public class Challenge implements Serializable {
     public Challenge() {
     }
 
-    public Challenge(String name, Timestamp start, Timestamp finish, Set<Participation> challengesUsersSet, Set<ChallengeExercise> challengesExercisesSet) {
+    public Challenge(String name, Date start, Date finish) {
         this.name = name;
         this.start = start;
         this.finish = finish;
-        for (Participation participation : challengesUsersSet) participation.setChall(this);
-        for (ChallengeExercise challengesExercise : challengesExercisesSet) challengesExercise.setChall(this);
     }
 
 
